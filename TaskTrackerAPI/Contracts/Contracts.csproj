@@ -4,8 +4,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Enums\" />
-      <Folder Include="Models\" />
+        <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
 </Project>

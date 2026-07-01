@@ -1,0 +1,77 @@
+root = true
+
+[*.cs]
+# ─── Indentation & whitespace ────────────────────────────────────────────────
+indent_style = space
+indent_size = 4
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# ─── Unused variables / dead code ────────────────────────────────────────────
+dotnet_diagnostic.CS0168.severity = error   # variable declared but never used
+dotnet_diagnostic.CS0219.severity = error   # variable assigned but value never used
+dotnet_diagnostic.IDE0059.severity = error  # unnecessary assignment to local variable
+dotnet_diagnostic.IDE0060.severity = error  # unused method parameter
+dotnet_diagnostic.IDE0051.severity = error  # private member never used
+dotnet_diagnostic.IDE0052.severity = error  # private member only assigned, never read
+
+# ─── Null safety ─────────────────────────────────────────────────────────────
+dotnet_diagnostic.CS8600.severity = error   # null assigned to non-nullable type
+dotnet_diagnostic.CS8602.severity = error   # dereference of possibly null reference
+dotnet_diagnostic.CS8603.severity = error   # possibly null return
+dotnet_diagnostic.CS8604.severity = error   # null argument for non-nullable parameter
+dotnet_diagnostic.CS8618.severity = error   # non-nullable field not initialized
+
+# ─── Naming rules ────────────────────────────────────────────────────────────
+# Types, namespaces, methods, properties, events → PascalCase
+dotnet_naming_rule.pascal_case_for_types.symbols               = types
+dotnet_naming_rule.pascal_case_for_types.style                 = pascal_case_style
+dotnet_naming_rule.pascal_case_for_types.severity              = error
+
+dotnet_naming_rule.pascal_case_for_members.symbols             = members
+dotnet_naming_rule.pascal_case_for_members.style               = pascal_case_style
+dotnet_naming_rule.pascal_case_for_members.severity            = error
+
+# Private fields → _camelCase
+dotnet_naming_rule.private_fields_underscore.symbols           = private_fields
+dotnet_naming_rule.private_fields_underscore.style             = underscore_camel_style
+dotnet_naming_rule.private_fields_underscore.severity          = error
+
+# Local variables & parameters → camelCase
+dotnet_naming_rule.locals_camel_case.symbols                   = locals_and_params
+dotnet_naming_rule.locals_camel_case.style                     = camel_case_style
+dotnet_naming_rule.locals_camel_case.severity                  = error
+
+# Async methods → PascalCase + Async suffix
+dotnet_naming_rule.async_methods_end_in_async.symbols          = async_methods
+dotnet_naming_rule.async_methods_end_in_async.style            = pascal_async_style
+dotnet_naming_rule.async_methods_end_in_async.severity         = error
+
+# ── Symbol definitions ────────────────────────────────────────────────────────
+dotnet_naming_symbols.types.applicable_kinds                   = class, struct, interface, enum, delegate, namespace
+dotnet_naming_symbols.types.applicable_accessibilities         = *
+
+dotnet_naming_symbols.members.applicable_kinds                 = method, property, event
+dotnet_naming_symbols.members.applicable_accessibilities       = *
+
+dotnet_naming_symbols.private_fields.applicable_kinds          = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private, private_protected
+
+dotnet_naming_symbols.locals_and_params.applicable_kinds       = local, parameter
+dotnet_naming_symbols.locals_and_params.applicable_accessibilities = *
+
+dotnet_naming_symbols.async_methods.applicable_kinds           = method
+dotnet_naming_symbols.async_methods.applicable_accessibilities = *
+dotnet_naming_symbols.async_methods.required_modifiers         = async
+
+# ── Style definitions ─────────────────────────────────────────────────────────
+dotnet_naming_style.pascal_case_style.capitalization           = pascal_case
+
+dotnet_naming_style.camel_case_style.capitalization            = camel_case
+
+dotnet_naming_style.underscore_camel_style.capitalization      = camel_case
+dotnet_naming_style.underscore_camel_style.required_prefix     = _
+
+dotnet_naming_style.pascal_async_style.capitalization          = pascal_case
+dotnet_naming_style.pascal_async_style.required_suffix         = Async
