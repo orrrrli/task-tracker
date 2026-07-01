@@ -1,0 +1,766 @@
+{
+  "repo": "orrrrli/task-tracker",
+  "owner": "orrrrli",
+  "owner_type": "user",
+  "project_number": 5,
+  "assignee": "orrrrli",
+  "project_title": "Task Tracker Backlog",
+  "epics": [
+    {
+      "id": "EPIC-DOMAIN",
+      "title": "Domain (COMPLETADA ✅)",
+      "fr": "Fase 1",
+      "phase": 1,
+      "size": "S",
+      "sprint": 0,
+      "summary": "Domain models and enums for tasks and users.",
+      "completed": true,
+      "stories": [
+        {
+          "id": "BE-DOMAIN-1",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want a TaskItem domain model with Title, Description, Status, Priority, Creator, and AssignedTo fields, so that the business entity is properly represented in code.",
+          "acceptance_criteria": [
+            "Given the domain layer, When I inspect TaskItem, Then it has Title, Description, Status, Priority, Creator, and AssignedTo fields."
+          ],
+          "tasks": [
+            "Create TaskItem entity"
+          ]
+        },
+        {
+          "id": "BE-DOMAIN-2",
+          "area": "backend",
+          "estimate": "XS",
+          "title": "As a developer, I want TaskItemStatus and TaskItemPriority enums, so that status and priority values are type-safe and constrained.",
+          "acceptance_criteria": [
+            "Given the domain layer, When I inspect enums, Then TaskItemStatus and TaskItemPriority exist with appropriate values."
+          ],
+          "tasks": [
+            "Create TaskItemStatus enum",
+            "Create TaskItemPriority enum"
+          ]
+        },
+        {
+          "id": "BE-DOMAIN-3",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want a User domain model with unique email, so that task ownership and assignment are trackable.",
+          "acceptance_criteria": [
+            "Given the domain layer, When I inspect User, Then it has Id, Name, Email, PasswordHash, CreatedAt, UpdatedAt fields."
+          ],
+          "tasks": [
+            "Create User entity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-APPLICATION",
+      "title": "Application Layer — CQRS (COMPLETADA ✅)",
+      "fr": "Fase 2",
+      "phase": 2,
+      "size": "L",
+      "sprint": 0,
+      "summary": "CQRS commands, queries, handlers, validators, and mappings.",
+      "completed": true,
+      "stories": [
+        {
+          "id": "BE-APP-1",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want a CreateTaskCommand and handler, so that task creation logic is encapsulated and testable in isolation.",
+          "acceptance_criteria": [
+            "Given a CreateTaskCommand, When the handler runs, Then a new task is created."
+          ],
+          "tasks": [
+            "Create CreateTaskCommand",
+            "Implement CreateTaskCommandHandler"
+          ]
+        },
+        {
+          "id": "BE-APP-2",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want an UpdateTaskCommand and handler with partial-update semantics, so that only the provided fields are modified on the task.",
+          "acceptance_criteria": [
+            "Given an UpdateTaskCommand with partial fields, When the handler runs, Then only the provided fields are updated."
+          ],
+          "tasks": [
+            "Create UpdateTaskCommand",
+            "Implement UpdateTaskCommandHandler"
+          ]
+        },
+        {
+          "id": "BE-APP-3",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want a DeleteTaskCommand and handler, so that tasks can be removed by id.",
+          "acceptance_criteria": [
+            "Given a DeleteTaskCommand, When the handler runs, Then the task is deleted."
+          ],
+          "tasks": [
+            "Create DeleteTaskCommand",
+            "Implement DeleteTaskCommandHandler"
+          ]
+        },
+        {
+          "id": "BE-APP-4",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want a GetTaskByIdQuery and handler, so that a single task can be retrieved with full creator and assignee details.",
+          "acceptance_criteria": [
+            "Given a GetTaskByIdQuery, When the handler runs, Then the task is returned with creator and assignee details."
+          ],
+          "tasks": [
+            "Create GetTaskByIdQuery",
+            "Implement GetTaskByIdQueryHandler"
+          ]
+        },
+        {
+          "id": "BE-APP-5",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a ListTasksQuery and handler that supports filtering by Status, Priority, and AssignedToId, sorting by Title, Priority, or CreatedAt, and 1-based pagination with configurable page size (default 7), so that consumers can browse and filter the task list efficiently.",
+          "acceptance_criteria": [
+            "Given a ListTasksQuery with filters, When the handler runs, Then filtered, sorted, paginated tasks are returned."
+          ],
+          "tasks": [
+            "Create ListTasksQuery",
+            "Implement ListTasksQueryHandler with filtering, sorting, pagination"
+          ]
+        },
+        {
+          "id": "BE-APP-6",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want ITaskRepository and IUserRepository interfaces, so that the application layer is decoupled from the persistence implementation.",
+          "acceptance_criteria": [
+            "Given the application layer, When I inspect interfaces, Then ITaskRepository and IUserRepository exist."
+          ],
+          "tasks": [
+            "Create ITaskRepository interface",
+            "Create IUserRepository interface"
+          ]
+        },
+        {
+          "id": "BE-APP-7",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want FluentValidation validators for CreateTaskCommand and UpdateTaskCommand, so that constraint violations surface with clear error messages before handler execution.",
+          "acceptance_criteria": [
+            "Given invalid input, When the validator runs, Then validation errors are returned."
+          ],
+          "tasks": [
+            "Create CreateTaskCommandValidator",
+            "Create UpdateTaskCommandValidator"
+          ]
+        },
+        {
+          "id": "BE-APP-8",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want AutoMapper mappings from TaskItem to TaskResult, so that domain models are safely projected to application DTOs without leaking persistence internals.",
+          "acceptance_criteria": [
+            "Given a TaskItem, When mapped, Then a TaskResult is returned with correct fields."
+          ],
+          "tasks": [
+            "Create TaskMappingConfig with AutoMapper"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-INFRASTRUCTURE",
+      "title": "Infrastructure — Persistence (COMPLETADA ✅)",
+      "fr": "Fase 3",
+      "phase": 3,
+      "size": "M",
+      "sprint": 0,
+      "summary": "PostgreSQL persistence with EF Core.",
+      "completed": true,
+      "stories": [
+        {
+          "id": "BE-INFRA-1",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a PostgreSQL-backed AppDbContext with EF Core, so that tasks and users are persisted in a relational store.",
+          "acceptance_criteria": [
+            "Given the infrastructure layer, When I inspect AppDbContext, Then it connects to PostgreSQL."
+          ],
+          "tasks": [
+            "Create AppDbContext with EF Core",
+            "Configure PostgreSQL connection"
+          ]
+        },
+        {
+          "id": "BE-INFRA-2",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a TaskRepository implementing ITaskRepository with GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, and DeleteAsync, so that all CRUD operations are available to the application layer.",
+          "acceptance_criteria": [
+            "Given a TaskRepository, When I call CRUD methods, Then tasks are persisted correctly."
+          ],
+          "tasks": [
+            "Implement TaskRepository with all CRUD methods"
+          ]
+        },
+        {
+          "id": "BE-INFRA-3",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want an EF Core migration (Init) that creates the Tasks and Users tables, so that the schema is version-controlled and reproducible.",
+          "acceptance_criteria": [
+            "Given the migration, When applied, Then Tasks and Users tables exist."
+          ],
+          "tasks": [
+            "Create Init migration"
+          ]
+        },
+        {
+          "id": "BE-INFRA-4",
+          "area": "backend",
+          "estimate": "XS",
+          "title": "As a developer, I want Status and Priority stored as strings in the database, so that enum values are human-readable in the DB and resilient to reordering.",
+          "acceptance_criteria": [
+            "Given the schema, When I inspect Status and Priority columns, Then they are stored as strings."
+          ],
+          "tasks": [
+            "Configure enum-to-string conversion in EF Core"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-CONTRACTS",
+      "title": "HTTP Contracts (COMPLETADA ✅)",
+      "fr": "Fase 4",
+      "phase": 4,
+      "size": "S",
+      "sprint": 0,
+      "summary": "Request and response DTOs for HTTP API.",
+      "completed": true,
+      "stories": [
+        {
+          "id": "BE-CONTRACTS-1",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want CreateTaskRequest, UpdateTaskRequest, and TaskListRequest DTOs, so that HTTP input shapes are explicitly defined and decoupled from domain commands.",
+          "acceptance_criteria": [
+            "Given the contracts layer, When I inspect request DTOs, Then CreateTaskRequest, UpdateTaskRequest, and TaskListRequest exist."
+          ],
+          "tasks": [
+            "Create CreateTaskRequest",
+            "Create UpdateTaskRequest",
+            "Create TaskListRequest"
+          ]
+        },
+        {
+          "id": "BE-CONTRACTS-2",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want TaskResponse and TaskListResponse DTOs, so that HTTP output shapes are stable and versioned independently of the domain model.",
+          "acceptance_criteria": [
+            "Given the contracts layer, When I inspect response DTOs, Then TaskResponse and TaskListResponse exist."
+          ],
+          "tasks": [
+            "Create TaskResponse",
+            "Create TaskListResponse"
+          ]
+        },
+        {
+          "id": "BE-CONTRACTS-3",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want all API responses wrapped in { \"ok\": true, \"data\": ... } on success and { \"ok\": false, \"error\": { \"code\": \"...\", \"message\": \"...\" } } on failure, so that clients have a uniform response contract regardless of the operation.",
+          "acceptance_criteria": [
+            "Given an API response, When I inspect the envelope, Then it has ok and data/error fields."
+          ],
+          "tasks": [
+            "Create ApiResult helper with envelope format"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-CARTER",
+      "title": "API — Carter Endpoint Modules (COMPLETADA ✅)",
+      "fr": "Fase 5",
+      "phase": 5,
+      "size": "M",
+      "sprint": 0,
+      "summary": "Carter modules exposing task CRUD endpoints.",
+      "completed": true,
+      "stories": [
+        {
+          "id": "BE-CARTER-1",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want GET /tasks with optional ?status=, ?priority=, ?assignedToId=, ?sortBy=, ?sortDesc=, ?page=, and ?size= query params, so that I can retrieve a filtered, sorted, paginated list of tasks directly from a browser address bar.",
+          "acceptance_criteria": [
+            "Given the /tasks endpoint, When I call it with query params, Then filtered, sorted, paginated tasks are returned."
+          ],
+          "tasks": [
+            "Implement GET /tasks route in TasksModule"
+          ]
+        },
+        {
+          "id": "BE-CARTER-2",
+          "area": "backend",
+          "estimate": "XS",
+          "title": "As an API consumer, I want GET /tasks/{id}, so that I can retrieve the full detail of a single task including creator name and assignee name.",
+          "acceptance_criteria": [
+            "Given the /tasks/{id} endpoint, When I call it, Then the task detail is returned."
+          ],
+          "tasks": [
+            "Implement GET /tasks/{id} route in TasksModule"
+          ]
+        },
+        {
+          "id": "BE-CARTER-3",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want GET /tasks/create?title=&description=&priority=&assignedToId=&creatorId=, so that I can create a new task by navigating to a URL or pasting it in a browser for easy demoing.",
+          "acceptance_criteria": [
+            "Given the /tasks/create endpoint, When I call it with query params, Then a new task is created."
+          ],
+          "tasks": [
+            "Implement GET /tasks/create route in TasksModule"
+          ]
+        },
+        {
+          "id": "BE-CARTER-4",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want GET /tasks/{id}/update?title=&description=&status=&priority=&assignedToId=, so that I can partially update a task with only the fields I pass.",
+          "acceptance_criteria": [
+            "Given the /tasks/{id}/update endpoint, When I call it with query params, Then the task is partially updated."
+          ],
+          "tasks": [
+            "Implement GET /tasks/{id}/update route in TasksModule"
+          ]
+        },
+        {
+          "id": "BE-CARTER-5",
+          "area": "backend",
+          "estimate": "XS",
+          "title": "As an API consumer, I want GET /tasks/{id}/delete, so that I can delete a task by navigating to a single URL.",
+          "acceptance_criteria": [
+            "Given the /tasks/{id}/delete endpoint, When I call it, Then the task is deleted."
+          ],
+          "tasks": [
+            "Implement GET /tasks/{id}/delete route in TasksModule"
+          ]
+        },
+        {
+          "id": "BE-CARTER-6",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want all request and response bodies (including Authorization headers and credentials) logged at info level, so that every interaction is fully reproducible from logs.",
+          "acceptance_criteria": [
+            "Given an API call, When it is made, Then the request and response are logged at info level."
+          ],
+          "tasks": [
+            "Implement logging middleware for request/response bodies"
+          ]
+        },
+        {
+          "id": "BE-CARTER-7",
+          "area": "backend",
+          "estimate": "XS",
+          "title": "As a developer, I want Carter ICarterModule implementations registered via app.MapCarter(), so that routes are organized by resource without manual route registration boilerplate.",
+          "acceptance_criteria": [
+            "Given the API, When it starts, Then Carter modules are registered and routes are available."
+          ],
+          "tasks": [
+            "Register Carter modules in Program.cs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-DOCKER",
+      "title": "Docker Compose — Portabilidad",
+      "fr": "Fase 6",
+      "phase": 6,
+      "size": "S",
+      "sprint": 1,
+      "summary": "Containerize the API + PostgreSQL stack for one-command startup.",
+      "stories": [
+        {
+          "id": "OPS-DOCKER-1",
+          "area": "devops",
+          "estimate": "M",
+          "title": "As a developer, I want a docker-compose.yml that starts the API and PostgreSQL with a single command, so the entire stack runs without local dependency installation.",
+          "acceptance_criteria": [
+            "Given docker-compose.yml exists, When I run docker compose up, Then both api and db containers start and the API is reachable on port 5255."
+          ],
+          "tasks": [
+            "Write docker-compose.yml with api and db services",
+            "Configure PostgreSQL 16 image with healthcheck",
+            "Wire ConnectionStrings__DefaultConnection via environment",
+            "Test docker compose up from clean checkout"
+          ]
+        },
+        {
+          "id": "OPS-DOCKER-2",
+          "area": "devops",
+          "estimate": "S",
+          "title": "As a developer, I want the API container to run EF Core migrations on startup, so a fresh environment is schema-ready without manual steps.",
+          "acceptance_criteria": [
+            "Given a fresh PostgreSQL container, When the API container starts, Then migrations are applied and the Tasks/Users tables exist."
+          ],
+          "tasks": [
+            "Add migration runner to Program.cs startup",
+            "Verify migrations run on first boot"
+          ]
+        },
+        {
+          "id": "OPS-DOCKER-3",
+          "area": "devops",
+          "estimate": "S",
+          "title": "As a developer, I want environment variables for connection strings and secrets managed via Docker Compose, so the app is configurable without changing code.",
+          "acceptance_criteria": [
+            "Given docker-compose.yml, When I set environment variables, Then the API picks them up without code changes."
+          ],
+          "tasks": [
+            "Document required env vars in README",
+            "Add .env.example with defaults"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-FRONTEND",
+      "title": "Frontend — UI Responsive",
+      "fr": "Fase 7",
+      "phase": 7,
+      "size": "L",
+      "sprint": 2,
+      "summary": "Build a responsive, mobile-first task management UI.",
+      "stories": [
+        {
+          "id": "FE-FE-1",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want a task list view that shows all tasks with their title, status, priority, and assignee, so I have an at-a-glance overview of the project.",
+          "acceptance_criteria": [
+            "Given tasks exist, When I load the list view, Then each task shows title, status, priority, and assignee."
+          ],
+          "tasks": [
+            "Scaffold frontend project (React/Vue/Svelte TBD)",
+            "Create task list component",
+            "Wire GET /tasks API call",
+            "Render task cards with key fields"
+          ]
+        },
+        {
+          "id": "FE-FE-2",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want to filter the task list by status and priority from the UI, so I can focus on the tasks that are relevant to me.",
+          "acceptance_criteria": [
+            "Given the task list, When I apply a status filter, Then only matching tasks are shown."
+          ],
+          "tasks": [
+            "Add filter dropdowns for status and priority",
+            "Wire query params to API call",
+            "Update list on filter change"
+          ]
+        },
+        {
+          "id": "FE-FE-3",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want to sort the task list by title, priority, or creation date, so I can organize my view to match my workflow.",
+          "acceptance_criteria": [
+            "Given the task list, When I click a sort header, Then tasks are reordered accordingly."
+          ],
+          "tasks": [
+            "Add sortable column headers",
+            "Wire sortBy and sortDesc query params",
+            "Update list on sort change"
+          ]
+        },
+        {
+          "id": "FE-FE-4",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want pagination controls in the task list (previous/next, page indicator), so I can navigate large datasets without overwhelming the view.",
+          "acceptance_criteria": [
+            "Given a paginated task list, When I click next, Then the next page of tasks is loaded."
+          ],
+          "tasks": [
+            "Add pagination controls (prev/next/page indicator)",
+            "Wire page and size query params",
+            "Handle empty pages gracefully"
+          ]
+        },
+        {
+          "id": "FE-FE-5",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want a task detail view showing all fields of a task, so I can see the full context of a work item.",
+          "acceptance_criteria": [
+            "Given a task in the list, When I click it, Then a detail view shows all fields."
+          ],
+          "tasks": [
+            "Create task detail component",
+            "Wire GET /tasks/{id} API call",
+            "Display all task fields"
+          ]
+        },
+        {
+          "id": "FE-FE-6",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want a form to create a new task with fields for title, description, priority, and assignee, so I can add work items to the system.",
+          "acceptance_criteria": [
+            "Given the create form, When I fill it and submit, Then a new task is created and appears in the list."
+          ],
+          "tasks": [
+            "Create task form component",
+            "Add fields for title, description, priority, assignee",
+            "Wire GET /tasks/create API call",
+            "Redirect to list on success"
+          ]
+        },
+        {
+          "id": "FE-FE-7",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want to edit an existing task's title, description, status, priority, and assignee from the UI, so I can keep task information up to date.",
+          "acceptance_criteria": [
+            "Given a task in edit mode, When I change fields and save, Then the task is updated."
+          ],
+          "tasks": [
+            "Create edit form component",
+            "Pre-populate with current values",
+            "Wire GET /tasks/{id}/update API call",
+            "Handle validation errors"
+          ]
+        },
+        {
+          "id": "FE-FE-8",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want a delete confirmation and one-click delete for a task, so I can remove completed or invalid items.",
+          "acceptance_criteria": [
+            "Given a task, When I click delete, Then a confirmation appears and the task is removed on confirm."
+          ],
+          "tasks": [
+            "Add delete button to task detail",
+            "Show confirmation dialog",
+            "Wire GET /tasks/{id}/delete API call",
+            "Redirect to list on success"
+          ]
+        },
+        {
+          "id": "FE-FE-9",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want the UI to be fully responsive and usable on mobile, tablet, and desktop, so I can manage tasks from any device.",
+          "acceptance_criteria": [
+            "Given the UI, When I resize the browser, Then the layout adapts gracefully."
+          ],
+          "tasks": [
+            "Apply responsive CSS (mobile-first)",
+            "Test on mobile/tablet/desktop viewports",
+            "Fix layout issues"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "EPIC-AUTH",
+      "title": "Authentication",
+      "fr": "Épica 2",
+      "phase": 8,
+      "size": "L",
+      "sprint": 3,
+      "summary": "Implement JWT-based authentication for secure task management.",
+      "stories": [
+        {
+          "id": "BE-AUTH-1",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a UserRepository implementing IUserRepository, so user lookup and creation are available to auth handlers.",
+          "acceptance_criteria": [
+            "Given a user email, When I call GetByEmailAsync, Then the user is returned if they exist."
+          ],
+          "tasks": [
+            "Implement UserRepository with EF Core",
+            "Register in DI"
+          ]
+        },
+        {
+          "id": "BE-AUTH-2",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a RegisterCommand and handler that creates a new User with a hashed password, so new users can be onboarded.",
+          "acceptance_criteria": [
+            "Given a registration request, When the handler runs, Then a user is created with a hashed password."
+          ],
+          "tasks": [
+            "Create RegisterCommand",
+            "Implement handler with password hashing",
+            "Add FluentValidation validator"
+          ]
+        },
+        {
+          "id": "BE-AUTH-3",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As a developer, I want a LoginQuery and handler that validates credentials and returns a JWT, so authenticated sessions can be established.",
+          "acceptance_criteria": [
+            "Given valid credentials, When the handler runs, Then a JWT is returned."
+          ],
+          "tasks": [
+            "Create LoginQuery",
+            "Implement handler with credential validation",
+            "Generate JWT on success"
+          ]
+        },
+        {
+          "id": "BE-AUTH-4",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want an IJwtTokenGenerator implementation that signs tokens with a secret and expiration, so token generation is centralized and configurable.",
+          "acceptance_criteria": [
+            "Given a user, When I call GenerateToken, Then a signed JWT is returned."
+          ],
+          "tasks": [
+            "Implement JwtTokenGenerator",
+            "Configure secret and expiration from appsettings",
+            "Register in DI"
+          ]
+        },
+        {
+          "id": "BE-AUTH-5",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As a developer, I want an IPasswordHasher implementation, so passwords are never stored in plain text.",
+          "acceptance_criteria": [
+            "Given a password, When I hash it, Then a secure hash is returned."
+          ],
+          "tasks": [
+            "Implement PasswordHasher (e.g., BCrypt)",
+            "Register in DI"
+          ]
+        },
+        {
+          "id": "BE-AUTH-6",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want GET /auth/register?email=&password=&name=, so new accounts can be created from a browser.",
+          "acceptance_criteria": [
+            "Given the register endpoint, When I call it with valid params, Then a user is created."
+          ],
+          "tasks": [
+            "Create AuthModule with register route",
+            "Wire RegisterCommand",
+            "Return success envelope"
+          ]
+        },
+        {
+          "id": "BE-AUTH-7",
+          "area": "backend",
+          "estimate": "S",
+          "title": "As an API consumer, I want GET /auth/login?email=&password= returning { ok: true, data: { token: ... } }, so a session token can be obtained from a browser.",
+          "acceptance_criteria": [
+            "Given the login endpoint, When I call it with valid credentials, Then a JWT is returned."
+          ],
+          "tasks": [
+            "Add login route to AuthModule",
+            "Wire LoginQuery",
+            "Return token in envelope"
+          ]
+        },
+        {
+          "id": "BE-AUTH-8",
+          "area": "backend",
+          "estimate": "M",
+          "title": "As an API consumer, I want unauthorized requests to task endpoints to return { ok: false, error: { code: Auth.Unauthorized, message: ... } }, so protected resources are inaccessible without a valid token.",
+          "acceptance_criteria": [
+            "Given a protected endpoint, When I call it without a token, Then a 401 error is returned."
+          ],
+          "tasks": [
+            "Add JWT authentication middleware",
+            "Protect task endpoints with [Authorize]",
+            "Return error envelope on auth failure"
+          ]
+        },
+        {
+          "id": "FE-AUTH-1",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want a login page with email and password fields, so I can authenticate and access the task management UI.",
+          "acceptance_criteria": [
+            "Given the login page, When I enter credentials and submit, Then I am logged in."
+          ],
+          "tasks": [
+            "Create login form component",
+            "Wire GET /auth/login API call",
+            "Store JWT in localStorage",
+            "Redirect to task list on success"
+          ]
+        },
+        {
+          "id": "FE-AUTH-2",
+          "area": "frontend",
+          "estimate": "M",
+          "title": "As a user, I want a registration page with name, email, and password fields, so I can create a new account.",
+          "acceptance_criteria": [
+            "Given the registration page, When I fill it and submit, Then an account is created."
+          ],
+          "tasks": [
+            "Create registration form component",
+            "Wire GET /auth/register API call",
+            "Redirect to login on success"
+          ]
+        },
+        {
+          "id": "FE-AUTH-3",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want to be redirected to the task list after a successful login, so I land in a productive state immediately.",
+          "acceptance_criteria": [
+            "Given a successful login, When the response is received, Then I am redirected to the task list."
+          ],
+          "tasks": [
+            "Add redirect logic after login success",
+            "Test redirect flow"
+          ]
+        },
+        {
+          "id": "FE-AUTH-4",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want my session to persist across browser refreshes (JWT stored client-side), so I do not need to re-authenticate on every visit.",
+          "acceptance_criteria": [
+            "Given a logged-in session, When I refresh the page, Then I remain logged in."
+          ],
+          "tasks": [
+            "Store JWT in localStorage",
+            "Load JWT on app init",
+            "Attach JWT to all API requests"
+          ]
+        },
+        {
+          "id": "FE-AUTH-5",
+          "area": "frontend",
+          "estimate": "S",
+          "title": "As a user, I want a logout button that clears my session, so I can safely end my session on a shared device.",
+          "acceptance_criteria": [
+            "Given a logged-in session, When I click logout, Then the JWT is cleared and I am redirected to login."
+          ],
+          "tasks": [
+            "Add logout button to UI",
+            "Clear JWT from localStorage",
+            "Redirect to login page"
+          ]
+        }
+      ]
+    }
+  ]
+}

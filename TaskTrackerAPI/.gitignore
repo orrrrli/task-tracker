@@ -44,3 +44,13 @@ project.fragment.lock.json
 .idea/
 .vscode/
 *.swp
+
+# AI Engineering Stack & Obsidian Brain
+.agents/
+.claude/
+.opencode/
+.windsurf/
+docs/brain/
+opencode.json
+GEMINI.md
+.state.json
