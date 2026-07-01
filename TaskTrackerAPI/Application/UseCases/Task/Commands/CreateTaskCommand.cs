@@ -1,7 +1,7 @@
 using Application.Common.Models;
 using Domain.Enums;
 
-namespace Application.UseCases.Commands;
+namespace Application.UseCases.Task.Commands;
 
 public record CreateTaskCommand(
     string Title,

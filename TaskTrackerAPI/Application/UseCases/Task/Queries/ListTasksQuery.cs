@@ -1,7 +1,7 @@
 using Application.Common.Models;
 using Domain.Enums;
 
-namespace Application.UseCases.Queries;
+namespace Application.UseCases.Task.Queries;
 
 public record ListTasksQuery(
     TaskItemStatus? Status,

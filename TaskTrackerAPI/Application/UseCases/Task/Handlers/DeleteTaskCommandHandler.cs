@@ -1,7 +1,7 @@
 using Application.Common.Interfaces.Persistence;
-using Application.UseCases.Commands;
+using Application.UseCases.Task.Commands;
 
-namespace Application.UseCases.Handlers;
+namespace Application.UseCases.Task.Handlers;
 
 public class DeleteTaskCommandHandler(ITaskRepository taskRepository)
     : IRequestHandler<DeleteTaskCommand, ErrorOr<Deleted>>

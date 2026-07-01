@@ -1,8 +1,8 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Models;
-using Application.UseCases.Queries;
+using Application.UseCases.Task.Queries;
 
-namespace Application.UseCases.Handlers;
+namespace Application.UseCases.Task.Handlers;
 
 public class ListTasksQueryHandler(ITaskRepository taskRepository, IMapper mapper)
     : IRequestHandler<ListTasksQuery, ErrorOr<TaskListResult>>

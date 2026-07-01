@@ -1,8 +1,8 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Models;
-using Application.UseCases.Commands;
+using Application.UseCases.Task.Commands;
 
-namespace Application.UseCases.Handlers;
+namespace Application.UseCases.Task.Handlers;
 
 public class UpdateTaskCommandHandler(ITaskRepository taskRepository, IMapper mapper)
     : IRequestHandler<UpdateTaskCommand, ErrorOr<TaskResult>>

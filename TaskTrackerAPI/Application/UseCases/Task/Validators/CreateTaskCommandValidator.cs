@@ -1,7 +1,7 @@
-using Application.UseCases.Commands;
+using Application.UseCases.Task.Commands;
 using FluentValidation;
 
-namespace Application.UseCases.Validators;
+namespace Application.UseCases.Task.Validators;
 
 public class CreateTaskCommandValidator : AbstractValidator<CreateTaskCommand>
 {

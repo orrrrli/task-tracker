@@ -1,90 +1,182 @@
+using Carter;
+
+using Microsoft.AspNetCore.Mvc;
+
 using API.Common;
 using API.Helpers;
-using Application.UseCases.Commands;
-using Application.UseCases.Queries;
-using Carter;
+using Application.Common.Models;
+using Application.UseCases.Task.Commands;
+using Application.UseCases.Task.Queries;
 using Domain.Enums;
-using ErrorOr;
 
 namespace API.Modules;
 
-public class TasksModule : ICarterModule
+public class TasksModule : MainModule, ICarterModule
 {
-    public void AddRoutes(IEndpointRouteBuilder routes)
+    public void AddRoutes(IEndpointRouteBuilder app)
     {
-        routes.MapGet("/tasks", async (
-            ISender sender,
-            TaskItemStatus? status,
-            TaskItemPriority? priority,
-            int? assignedToId,
-            string? sortBy,
-            bool sortDesc = false,
-            int page = 1,
-            int size = 7) =>
+        RouteGroupBuilder group = app.MapGroup("tasks");
+
+        group.MapGet("/", GetAllTasksAsync)
+            .Produces<ApiSuccessResponse<TaskListResult>>(StatusCodes.Status200OK)
+            .WithName("GetAllTasks")
+            .WithOpenApi();
+
+        group.MapGet("/{id:int}", GetTaskByIdAsync)
+            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("GetTaskById")
+            .WithOpenApi();
+
+        group.MapGet("/create", CreateTaskAsync)
+            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status201Created)
+            .WithName("CreateTask")
+            .WithOpenApi();
+
+        group.MapGet("/{id:int}/update", UpdateTaskAsync)
+            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("UpdateTask")
+            .WithOpenApi();
+
+        group.MapGet("/{id:int}/delete", DeleteTaskAsync)
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithName("DeleteTask")
+            .WithOpenApi();
+    }
+
+    private static async Task<IResult> GetAllTasksAsync(
+        ISender sender,
+        HttpContext httpContext,
+        [FromQuery] TaskItemStatus? status,
+        [FromQuery] TaskItemPriority? priority,
+        [FromQuery] int? assignedToId,
+        [FromQuery] string? sortBy,
+        [FromQuery] bool sortDesc = false,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 7)
+    {
+        string fullRoute = httpContext.Request.Path;
+        string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, SortBy: {sortBy}, SortDesc: {sortDesc}, Page: {page}, Size: {size}";
+        LoggingHelper.LogRequest(fullRoute, parametros);
+
+        try
         {
             var query = new ListTasksQuery(status, priority, assignedToId, sortBy, sortDesc, page, size);
             var result = await sender.Send(query);
-            var route = $"/tasks?status={status}&priority={priority}&assignedToId={assignedToId}&sortBy={sortBy}&sortDesc={sortDesc}&page={page}&size={size}";
 
             return result.Match(
-                data => ApiResults.Success(data, route),
-                errors => ApiResults.Problem(errors, route));
-        });
-
-        routes.MapGet("/tasks/{id:int}", async (ISender sender, int id) =>
+                value => ApiResults.Success(value, fullRoute),
+                errors => ApiResults.Problem(errors, fullRoute));
+        }
+        catch (Exception ex)
         {
-            var query = new GetTaskByIdQuery(id);
-            var result = await sender.Send(query);
-            var route = $"/tasks/{id}";
+            return ApiResults.Error(ex, fullRoute, parametros);
+        }
+    }
+
+    private static async Task<IResult> GetTaskByIdAsync(
+        ISender sender,
+        HttpContext httpContext,
+        [FromRoute] int id)
+    {
+        string fullRoute = httpContext.Request.Path;
+        string parametros = $"Id: {id}";
+        LoggingHelper.LogRequest(fullRoute, parametros);
+
+        try
+        {
+            var result = await sender.Send(new GetTaskByIdQuery(id));
 
             return result.Match(
-                data => ApiResults.Success(data, route),
-                errors => ApiResults.Problem(errors, route));
-        });
+                value => ApiResults.Success(value, fullRoute),
+                errors => ApiResults.Problem(errors, fullRoute));
+        }
+        catch (Exception ex)
+        {
+            return ApiResults.Error(ex, fullRoute, parametros);
+        }
+    }
 
-        routes.MapGet("/tasks/create", async (
-            ISender sender,
-            string title,
-            string? description,
-            TaskItemPriority priority,
-            int? assignedToId,
-            int creatorId) =>
+    private static async Task<IResult> CreateTaskAsync(
+        ISender sender,
+        HttpContext httpContext,
+        [FromQuery] string title,
+        [FromQuery] TaskItemPriority priority,
+        [FromQuery] int creatorId,
+        [FromQuery] string? description,
+        [FromQuery] int? assignedToId)
+    {
+        string fullRoute = httpContext.Request.Path;
+        string parametros = $"Title: {title}, Priority: {priority}, CreatorId: {creatorId}";
+        LoggingHelper.LogRequest(fullRoute, parametros);
+
+        try
         {
             var command = new CreateTaskCommand(title, description, priority, assignedToId, creatorId);
             var result = await sender.Send(command);
 
             return result.Match(
-                data => ApiResults.Created($"/tasks/{data.Id}", data.Id),
-                errors => ApiResults.Problem(errors, "/tasks/create"));
-        });
+                value => ApiResults.Created($"/tasks/{value.Id}", value.Id),
+                errors => ApiResults.Problem(errors, fullRoute));
+        }
+        catch (Exception ex)
+        {
+            return ApiResults.Error(ex, fullRoute, parametros);
+        }
+    }
 
-        routes.MapGet("/tasks/{id:int}/update", async (
-            ISender sender,
-            int id,
-            string? title,
-            string? description,
-            TaskItemStatus? status,
-            TaskItemPriority? priority,
-            int? assignedToId) =>
+    private static async Task<IResult> UpdateTaskAsync(
+        ISender sender,
+        HttpContext httpContext,
+        [FromRoute] int id,
+        [FromQuery] string? title,
+        [FromQuery] string? description,
+        [FromQuery] TaskItemStatus? status,
+        [FromQuery] TaskItemPriority? priority,
+        [FromQuery] int? assignedToId)
+    {
+        string fullRoute = httpContext.Request.Path;
+        string parametros = $"Id: {id}";
+        LoggingHelper.LogRequest(fullRoute, parametros);
+
+        try
         {
             var command = new UpdateTaskCommand(id, title, description, status, priority, assignedToId);
             var result = await sender.Send(command);
-            var route = $"/tasks/{id}/update";
 
             return result.Match(
-                data => ApiResults.Success(data, route),
-                errors => ApiResults.Problem(errors, route));
-        });
+                value => ApiResults.Success(value, fullRoute),
+                errors => ApiResults.Problem(errors, fullRoute));
+        }
+        catch (Exception ex)
+        {
+            return ApiResults.Error(ex, fullRoute, parametros);
+        }
+    }
 
-        routes.MapGet("/tasks/{id:int}/delete", async (ISender sender, int id) =>
+    private static async Task<IResult> DeleteTaskAsync(
+        ISender sender,
+        HttpContext httpContext,
+        [FromRoute] int id)
+    {
+        string fullRoute = httpContext.Request.Path;
+        string parametros = $"Id: {id}";
+        LoggingHelper.LogRequest(fullRoute, parametros);
+
+        try
         {
             var command = new DeleteTaskCommand(id);
             var result = await sender.Send(command);
-            var route = $"/tasks/{id}/delete";
 
             return result.Match(
-                _ => { LoggingHelper.LogInfo(route, null); return TypedResults.NoContent(); },
-                errors => ApiResults.Problem(errors, route));
-        });
+                _ => ApiResults.NoContent(fullRoute),
+                errors => ApiResults.Problem(errors, fullRoute));
+        }
+        catch (Exception ex)
+        {
+            return ApiResults.Error(ex, fullRoute, parametros);
+        }
     }
 }

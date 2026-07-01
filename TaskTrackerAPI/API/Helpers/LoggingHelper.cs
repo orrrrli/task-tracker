@@ -9,6 +9,9 @@ public static class LoggingHelper
     public static void Initialize(ILoggerFactory factory) =>
         _logger = factory.CreateLogger("API");
 
+    public static void LogRequest(string route, string parameters) =>
+        _logger?.LogInformation("Incoming request at {Route} | Params: {Parameters}", route, parameters);
+
     public static void LogInfo(string route, object? data) =>
         _logger?.LogInformation("Request at {Route}: {@Data}", route, data);
 
