@@ -6,5 +6,6 @@ public record CreateTaskRequest(
     string Title,
     string? Description,
     TaskItemPriority Priority,
-    int? AssignedToId
+    int? AssignedToId,
+    int CreatorId
 );

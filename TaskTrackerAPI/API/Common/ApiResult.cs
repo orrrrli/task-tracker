@@ -7,24 +7,41 @@ namespace API.Common;
 
 public record ApiSuccessResponse<T>
 {
+    public bool Ok { get; init; } = true;
     public required T Data { get; init; }
+}
+
+public record ApiErrorResponse
+{
+    public bool Ok { get; init; } = false;
+    public required ApiErrorDetail Error { get; init; }
+}
+
+public record ApiErrorDetail
+{
+    public required string Code { get; init; }
+    public required string Message { get; init; }
 }
 
 public static class ApiResults
 {
-    public static IResult Success<T>(T data, string route, object? logData = null, bool isPaginated = false)
+    public static IResult Success<T>(T data, string route, object? logData = null)
     {
         LoggingHelper.LogInfo(route, logData);
-        return data is null
-            ? TypedResults.Ok()
-            : isPaginated ? TypedResults.Ok(data) : TypedResults.Ok(new ApiSuccessResponse<T> { Data = data });
+        return TypedResults.Ok(new ApiSuccessResponse<T> { Data = data });
     }
 
-    public static IResult Created<T>(string route, int id, string message = "Registro creado exitosamente")
+    public static IResult NoContent(string route)
     {
-        CreatedResponse data = new(id, message);
+        LoggingHelper.LogInfo(route, null);
+        return TypedResults.NoContent();
+    }
+
+    public static IResult Created(string route, int id, string message = "Registro creado exitosamente")
+    {
+        var data = new CreatedResponse(id, message);
         LoggingHelper.LogInfo(route, data);
-        return TypedResults.Created(route, data);
+        return TypedResults.Created(route, new ApiSuccessResponse<CreatedResponse> { Data = data });
     }
 
     public static IResult Problem(List<Error> errors, string route)
@@ -36,9 +53,8 @@ public static class ApiResults
     public static IResult Error(Exception ex, string route, object request)
     {
         LoggingHelper.LogError(route, ex, request);
-        return TypedResults.Problem(
-            detail: ex.InnerException?.Message ?? ex.Message,
-            statusCode: StatusCodes.Status500InternalServerError,
-            title: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.");
+        return TypedResults.Json(
+            new ApiErrorResponse { Error = new ApiErrorDetail { Code = "InternalServerError", Message = ex.InnerException?.Message ?? ex.Message } },
+            statusCode: StatusCodes.Status500InternalServerError);
     }
 }
