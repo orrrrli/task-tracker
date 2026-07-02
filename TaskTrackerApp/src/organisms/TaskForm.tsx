@@ -34,7 +34,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
   const [priority, setPriority] = useState<TaskItemPriorityType>(TaskItemPriority.Medium)
   const [assignedToId, setAssignedToId] = useState<string>(UNASSIGNED_VALUE)
   const [error, setError] = useState<string | null>(null)
-  const { data: users, isLoading: isLoadingUsers } = useUsers()
+  const { data: users, isLoading: isLoadingUsers, isError: isUsersError, error: usersError } = useUsers()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,13 +64,19 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
           {error && <p className="text-destructive text-sm">{error}</p>}
 
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">
+              Title <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="title"
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value)
+                if (error) setError(null)
+              }}
               placeholder="Task title"
+              required
             />
           </div>
 
@@ -120,6 +126,11 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
                 ))}
               </SelectContent>
             </Select>
+            {isUsersError && (
+              <p className="text-destructive text-xs">
+                Failed to load users: {usersError instanceof Error ? usersError.message : 'Unknown error'}
+              </p>
+            )}
           </div>
         </CardContent>
 

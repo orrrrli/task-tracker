@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/tasks': 'http://localhost:5255',
+      '/users': 'http://localhost:5255',
     },
   },
 })
