@@ -1,6 +1,11 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { TaskCard } from '@/molecules/TaskCard'
 import { useTasks } from '@/hooks/useTasks'
+import type { GetAllTasksParams } from '@/api/api'
+
+interface TaskListProps {
+  filters: GetAllTasksParams
+}
 
 function TaskCardSkeleton() {
   return (
@@ -15,8 +20,8 @@ function TaskCardSkeleton() {
   )
 }
 
-export function TaskList() {
-  const { data: tasks, isLoading, isError, error } = useTasks()
+export function TaskList({ filters }: TaskListProps) {
+  const { data: tasks, isLoading, isError, error } = useTasks(filters)
 
   if (isLoading) {
     return (
