@@ -40,6 +40,8 @@ app.UseCors("DefaultPolicy");
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapCarter();
 app.MapHealthCheck();
 

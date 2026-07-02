@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 using API.Common;
 using API.Helpers;
-using Application.Common.Models;
 using Application.UseCases.Task.Commands;
 using Application.UseCases.Task.Queries;
+using Contracts.Common;
 using Contracts.Tasks.Requests;
+using Contracts.Tasks.Responses;
 using Domain.Enums;
 
 namespace API.Modules;
@@ -19,23 +20,23 @@ public class TasksModule : MainModule, ICarterModule
         RouteGroupBuilder group = app.MapGroup("tasks");
 
         group.MapGet("/", GetAllTasksAsync)
-            .Produces<ApiSuccessResponse<List<TaskResult>>>(StatusCodes.Status200OK)
+            .Produces<ApiSuccessResponse<List<TaskResponse>>>(StatusCodes.Status200OK)
             .WithName("GetAllTasks")
             .WithOpenApi();
 
         group.MapGet("/{id:int}", GetTaskByIdAsync)
-            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status200OK)
+            .Produces<ApiSuccessResponse<TaskResponse>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetTaskById")
             .WithOpenApi();
 
         group.MapPost("/", CreateTaskAsync)
-            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status201Created)
+            .Produces<ApiSuccessResponse<CreatedResponse>>(StatusCodes.Status201Created)
             .WithName("CreateTask")
             .WithOpenApi();
 
         group.MapPatch("/{id:int}", UpdateTaskAsync)
-            .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status200OK)
+            .Produces<ApiSuccessResponse<TaskResponse>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("UpdateTask")
             .WithOpenApi();
@@ -49,6 +50,7 @@ public class TasksModule : MainModule, ICarterModule
 
     private static async Task<IResult> GetAllTasksAsync(
         ISender sender,
+        IMapper mapper,
         HttpContext httpContext,
         [FromQuery] TaskItemStatus? status,
         [FromQuery] TaskItemPriority? priority,
@@ -66,7 +68,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(query);
 
             return result.Match(
-                value => ApiResults.Success(value),
+                value => ApiResults.Success(mapper.Map<List<TaskResponse>>(value)),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)
@@ -77,6 +79,7 @@ public class TasksModule : MainModule, ICarterModule
 
     private static async Task<IResult> GetTaskByIdAsync(
         ISender sender,
+        IMapper mapper,
         HttpContext httpContext,
         [FromRoute] int id)
     {
@@ -89,7 +92,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(new GetTaskByIdQuery(id));
 
             return result.Match(
-                value => ApiResults.Success(value),
+                value => ApiResults.Success(mapper.Map<TaskResponse>(value)),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)
@@ -124,6 +127,7 @@ public class TasksModule : MainModule, ICarterModule
 
     private static async Task<IResult> UpdateTaskAsync(
         ISender sender,
+        IMapper mapper,
         HttpContext httpContext,
         [FromRoute] int id,
         [FromBody] UpdateTaskRequest request)
@@ -138,7 +142,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(command);
 
             return result.Match(
-                value => ApiResults.Success(value),
+                value => ApiResults.Success(mapper.Map<TaskResponse>(value)),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)

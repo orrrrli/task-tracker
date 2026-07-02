@@ -1,6 +1,8 @@
 using Application.Common.Interfaces.Persistence;
+using Application.Common.Interfaces.Security;
 using Infrastructure.Common.Persistence;
 using Infrastructure.Persistence;
+using Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,10 @@ public static class DependencyInjection
 
         services.AddScoped<ITaskRepository, TaskRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
+
+        services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }

@@ -1,13 +1,13 @@
-using Application.Common.Models;
-using Contracts.Tasks.Responses;
+using Application.UseCases.Auth.Common;
+using Contracts.Auth.Responses;
 
 namespace API.Common.Mappings;
 
-public class TaskMappingConfig : IRegister
+public class AuthMappingConfig : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
         // Boundary mapping: Application result -> public API response (identical shape).
-        config.NewConfig<TaskResult, TaskResponse>();
+        config.NewConfig<AuthResult, AuthResponse>();
     }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { TaskFilters } from '@/molecules/TaskFilters'
@@ -13,6 +13,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useTask } from '@/hooks/useTask'
 import type { GetAllTasksParams, GetAllTasksStatus, GetAllTasksPriority } from '@/api/api'
 import { ValidationError } from '@/lib/ValidationError'
+import { LoginPage } from '@/pages/LoginPage'
+import { RegisterPage } from '@/pages/RegisterPage'
+import { useLogout } from '@/hooks/useAuth'
+import { getUser, getCurrentUserId, type AuthUser } from '@/lib/auth'
 
 const queryClient = new QueryClient()
 
@@ -58,7 +62,7 @@ function CreateTaskPage() {
 
   const handleSubmit = (data: TaskFormData) => {
     createTask.mutate(
-      { ...data, creatorId: 2 },
+      { ...data, creatorId: getCurrentUserId() },
       { onSuccess: () => navigate('/') }
     )
   }
@@ -86,20 +90,48 @@ function CreateTaskPage() {
 function AppContent() {
   const navigate = useNavigate()
   const location = useLocation()
+  const logout = useLogout()
   const isHome = location.pathname === '/'
+  const [authUser, setAuthUser] = useState<AuthUser | null>(getUser())
+
+  // Re-sync auth state whenever the route changes (e.g. after login redirect).
+  useEffect(() => {
+    setAuthUser(getUser())
+  }, [location])
+
+  const handleLogout = () => {
+    logout()
+    setAuthUser(null)
+    navigate('/')
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer" onClick={() => navigate('/')}>Task Tracker</h1>
-        {isHome && (
-          <Button className="w-full sm:w-auto" onClick={() => navigate('/create')}>Create Task</Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {isHome && (
+            <Button className="w-full sm:w-auto" onClick={() => navigate('/create')}>Create Task</Button>
+          )}
+          {authUser ? (
+            <>
+              <span className="text-sm text-muted-foreground">Hola, {authUser.name}</span>
+              <Button variant="outline" onClick={handleLogout}>Logout</Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
+              <Button variant="ghost" onClick={() => navigate('/register')}>Register</Button>
+            </>
+          )}
+        </div>
       </div>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create" element={<CreateTaskPage />} />
         <Route path="/edit/:id" element={<EditTaskPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </div>
   )

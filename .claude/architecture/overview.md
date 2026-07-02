@@ -3,13 +3,14 @@
 ## Stack
 
 ### Backend (`TaskTrackerAPI/`)
-- **Core Framework:** .NET 10, ASP.NET Core Web API
+- **Core Framework:** .NET 9, ASP.NET Core Web API (`TargetFramework` pinned in `Directory.Build.props`)
 - **Routing:** Carter 9.0 (module-based, replaces controller classes)
 - **Database:** PostgreSQL (via Npgsql)
 - **ORM:** Entity Framework Core 9
-- **CQRS / Mediator:** MediatR 14
+- **CQRS / Mediator:** MediatR 12
 - **Object Mapping:** Mapster 10
 - **Validation:** FluentValidation 12
+- **Auth:** JWT bearer (`Microsoft.AspNetCore.Authentication.JwtBearer` 9) + BCrypt hashing; task endpoints public (guest mode), JWT optional
 - **Error Handling:** ErrorOr 2 (functional Result type)
 - **Rate Limiting:** ASP.NET Core built-in `FixedWindowRateLimiter` (60 req/min per IP)
 
@@ -42,19 +43,19 @@ Clean Architecture with CQRS on the backend:
 ## Directory Structure
 ```
 /
-├── TaskTrackerAPI/          # .NET 10 REST API
+├── TaskTrackerAPI/          # .NET 9 REST API
 │   ├── Domain/              # Entities (TaskItem, User), enums — no dependencies
-│   ├── Application/         # CQRS handlers, validators, pipeline behaviors, interfaces
-│   ├── Infrastructure/      # EF Core AppDbContext, TaskRepository, migrations
-│   ├── API/                 # Carter modules, ApiResults, LoggingHelper, GlobalExceptionHandler
-│   └── Contracts/           # Public request/response DTOs (Auth + Tasks)
+│   ├── Application/         # CQRS handlers, validators, pipeline behaviors, interfaces; entity→Result Mapster configs
+│   ├── Infrastructure/      # EF Core AppDbContext, TaskRepository, migrations, Security (JWT + BCrypt)
+│   ├── API/                 # Carter modules, ApiResults, LoggingHelper, GlobalExceptionHandler; Result→Response Mapster configs
+│   └── Contracts/           # Public request/response DTOs (Auth + Tasks) — see DTO boundary-mapping rule in engineering/standards.md
 ├── TaskTrackerApp/          # Frontend web app (responsive)
 ├── CLAUDE.md                # Dallio house conventions (source of truth — migrated to .claude/)
 └── AGENTS.md                # Same as CLAUDE.md (multi-agent duplicate)
 ```
 
 ## Middleware Pipeline (API)
-`UseSecurityHeaders` → `UseCors` → `UseHttpsRedirection` → `UseRateLimiter` → `UseExceptionHandler` → `MapCarter` → `MapHealthCheck`
+`UseForwardedHeaders` → `UseHttpRequestLogging` → `UseSecurityHeaders` → `UseCors` → `UseHttpsRedirection` → `UseRateLimiter` → `UseExceptionHandler` → `UseAuthentication` → `UseAuthorization` → `MapCarter` → `MapHealthCheck`
 
 ## Deployment
 - **Target:** Personal VPS

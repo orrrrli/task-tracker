@@ -1,9 +1,12 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using API.Extensions;
 using API.GlobalException;
 using Carter;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API;
 
@@ -22,8 +25,35 @@ public static class DependencyInjection
 
         services.AddHealthChecks();
 
+        services.AddJwtAuthentication(configuration);
+
         services.ConfigureHttpJsonOptions(options =>
             options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+        return services;
+    }
+
+    private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection jwtSettings = configuration.GetSection("JwtSettings");
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings["Issuer"],
+                    ValidAudience = jwtSettings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtSettings["Secret"]!))
+                };
+            });
+
+        services.AddAuthorization();
 
         return services;
     }
