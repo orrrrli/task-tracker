@@ -4,6 +4,7 @@
  * API | v1
  * OpenAPI spec version: 1.0.0
  */
+import { customFetch } from './fetcher';
 export type TaskItemStatus = typeof TaskItemStatus[keyof typeof TaskItemStatus];
 
 
@@ -170,7 +171,7 @@ export const getGetAllTasksUrl = (params?: GetAllTasksParams,) => {
 
 export const getAllTasks = async (params?: GetAllTasksParams, options?: RequestInit): Promise<getAllTasksResponse> => {
 
-  const res = await fetch(getGetAllTasksUrl(params),
+  const res = await customFetch(getGetAllTasksUrl(params),
   {
     ...options,
     method: 'GET'
@@ -210,7 +211,7 @@ export const getCreateTaskUrl = () => {
 
 export const createTask = async (createTaskRequest: CreateTaskRequest, options?: RequestInit): Promise<createTaskResponse> => {
 
-  const res = await fetch(getCreateTaskUrl(),
+  const res = await customFetch(getCreateTaskUrl(),
   {
     ...options,
     method: 'POST',
@@ -257,7 +258,7 @@ export const getGetTaskByIdUrl = (id: number,) => {
 
 export const getTaskById = async (id: number, options?: RequestInit): Promise<getTaskByIdResponse> => {
 
-  const res = await fetch(getGetTaskByIdUrl(id),
+  const res = await customFetch(getGetTaskByIdUrl(id),
   {
     ...options,
     method: 'GET'
@@ -305,7 +306,7 @@ export const getUpdateTaskUrl = (id: number,) => {
 export const updateTask = async (id: number,
     updateTaskRequest: UpdateTaskRequest, options?: RequestInit): Promise<updateTaskResponse> => {
 
-  const res = await fetch(getUpdateTaskUrl(id),
+  const res = await customFetch(getUpdateTaskUrl(id),
   {
     ...options,
     method: 'PATCH',
@@ -352,7 +353,7 @@ export const getDeleteTaskUrl = (id: number,) => {
 
 export const deleteTask = async (id: number, options?: RequestInit): Promise<deleteTaskResponse> => {
 
-  const res = await fetch(getDeleteTaskUrl(id),
+  const res = await customFetch(getDeleteTaskUrl(id),
   {
     ...options,
     method: 'DELETE'

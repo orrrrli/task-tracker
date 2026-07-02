@@ -18,11 +18,15 @@ const PRIORITY_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' |
 
 interface TaskCardProps {
   task: TaskResult
+  onClick?: () => void
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, onClick }: TaskCardProps) {
   return (
-    <Card>
+    <Card
+      className={onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : undefined}
+      onClick={onClick}
+    >
       <CardHeader className="pb-2">
         <CardTitle className="text-base">{task.title}</CardTitle>
       </CardHeader>

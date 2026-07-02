@@ -1,0 +1,18 @@
+services:
+  api:
+    image: ghcr.io/orrrrli/task-tracker-api:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
+      CorsSettings__AllowedOrigins__0: "https://tasks.orlando.codes"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/orrrrli/task-tracker-frontend:latest
+    ports:
+      - "127.0.0.1:3000:80"
+    restart: unless-stopped

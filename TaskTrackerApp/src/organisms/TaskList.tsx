@@ -5,6 +5,7 @@ import type { GetAllTasksParams } from '@/api/api'
 
 interface TaskListProps {
   filters: GetAllTasksParams
+  onSelect: (id: number) => void
 }
 
 function TaskCardSkeleton() {
@@ -20,7 +21,7 @@ function TaskCardSkeleton() {
   )
 }
 
-export function TaskList({ filters }: TaskListProps) {
+export function TaskList({ filters, onSelect }: TaskListProps) {
   const { data: tasks, isLoading, isError, error } = useTasks(filters)
 
   if (isLoading) {
@@ -48,7 +49,7 @@ export function TaskList({ filters }: TaskListProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard key={task.id} task={task} onClick={() => onSelect(task.id)} />
       ))}
     </div>
   )
