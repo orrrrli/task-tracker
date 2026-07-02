@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTask } from '@/hooks/useTask'
 import type { GetAllTasksParams, GetAllTasksStatus, GetAllTasksPriority } from '@/api/api'
+import { ValidationError } from '@/lib/ValidationError'
 
 const queryClient = new QueryClient()
 
@@ -62,13 +63,18 @@ function CreateTaskPage() {
     )
   }
 
+  const createFieldErrors = createTask.error instanceof ValidationError
+    ? createTask.error.fieldErrors
+    : undefined
+
   return (
     <>
       <TaskForm
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
+        fieldErrors={createFieldErrors}
       />
-      {createTask.isError && (
+      {createTask.isError && !(createTask.error instanceof ValidationError) && (
         <p className="text-destructive text-sm mt-2">
           Failed to create task: {createTask.error instanceof Error ? createTask.error.message : 'Unknown error'}
         </p>
@@ -138,14 +144,19 @@ function EditTaskPage() {
     )
   }
 
+  const updateFieldErrors = updateTaskMutation.error instanceof ValidationError
+    ? updateTaskMutation.error.fieldErrors
+    : undefined
+
   return (
     <>
       <TaskForm
         initialData={initialData}
         onSubmit={handleSubmit}
         onCancel={() => navigate('/')}
+        fieldErrors={updateFieldErrors}
       />
-      {updateTaskMutation.isError && (
+      {updateTaskMutation.isError && !(updateTaskMutation.error instanceof ValidationError) && (
         <p className="text-destructive text-sm mt-2">
           Failed to update task: {updateTaskMutation.error instanceof Error ? updateTaskMutation.error.message : 'Unknown error'}
         </p>

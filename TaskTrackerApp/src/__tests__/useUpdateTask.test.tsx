@@ -2,6 +2,7 @@ import { describe, it, expect, afterAll, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useUpdateTask } from '@/hooks/useUpdateTask'
+import { ValidationError } from '@/lib/ValidationError'
 
 const originalFetch = globalThis.fetch
 
@@ -47,21 +48,25 @@ describe('useUpdateTask', () => {
     expect(mutationResult).toEqual(mockTask)
   })
 
-  it('throws API error message when present in error envelope', async () => {
+  it('throws ValidationError with fieldErrors when API returns 400 Validation', async () => {
     globalThis.fetch = (async () =>
-      new Response(JSON.stringify({ success: false, error: { code: 'Validation', message: 'Title: Title is required.' } }), {
+      new Response(JSON.stringify({ success: false, error: { code: 'Validation', message: 'Title: Title must not exceed 200 characters.' } }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       })) as typeof fetch
 
     const { result } = renderHook(() => useUpdateTask(), { wrapper })
 
-    await expect(
-      result.current.mutateAsync({
+    try {
+      await result.current.mutateAsync({
         id: 1,
-        request: { title: null, description: null, status: null, priority: null, assignedToId: null },
-      }),
-    ).rejects.toThrow('Title: Title is required.')
+        request: { title: 'a'.repeat(201), description: null, status: null, priority: null, assignedToId: null },
+      })
+      expect.fail('Should have thrown')
+    } catch (e) {
+      expect(e).toBeInstanceOf(ValidationError)
+      expect((e as ValidationError).fieldErrors).toEqual({ title: 'Title must not exceed 200 characters.' })
+    }
   })
 
   it('throws generic message when error envelope has no message', async () => {

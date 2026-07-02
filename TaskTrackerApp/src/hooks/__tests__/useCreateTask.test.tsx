@@ -3,6 +3,7 @@ import { render, screen, waitFor, cleanup } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useCreateTask } from '@/hooks/useCreateTask'
 import { createTask, type createTaskResponse, type CreateTaskRequest } from '@/api/api'
+import { ValidationError } from '@/lib/ValidationError'
 
 vi.mock('@/api/api', () => ({
   createTask: vi.fn(),
@@ -34,13 +35,17 @@ const mockTaskResult = {
 
 function TestComponent({ request }: { request: CreateTaskRequest }) {
   const mutation = useCreateTask()
+  const fieldErrors = mutation.error instanceof ValidationError ? mutation.error.fieldErrors : null
   return (
     <div>
       <button data-testid="create-btn" onClick={() => mutation.mutate(request)}>Create</button>
       {mutation.isSuccess && <span data-testid="success">Success</span>}
       {mutation.data && <span data-testid="task-data">{mutation.data.title}</span>}
       {mutation.isError && <span data-testid="error">Error</span>}
-      {mutation.error && <span data-testid="error-msg">{mutation.error.message}</span>}
+      {mutation.error && !(mutation.error instanceof ValidationError) && (
+        <span data-testid="error-msg">{mutation.error.message}</span>
+      )}
+      {fieldErrors?.title && <span data-testid="field-error-title">{fieldErrors.title}</span>}
     </div>
   )
 }
@@ -86,10 +91,10 @@ describe('useCreateTask', () => {
     expect(screen.getByTestId('task-data')).toHaveTextContent('New Task')
   })
 
-  it('throws API error message when present in error envelope', async () => {
+  it('throws ValidationError with fieldErrors when API returns 400 Validation', async () => {
     mockCreateTask.mockResolvedValueOnce({
       status: 400,
-      data: { success: false, error: { code: 'Validation', message: 'Title is required.' } },
+      data: { success: false, error: { code: 'Validation', message: 'Title: Title is required.' } },
     } as unknown as createTaskResponse)
     render(
       <QueryClientProvider client={queryClient}>
@@ -97,7 +102,7 @@ describe('useCreateTask', () => {
       </QueryClientProvider>
     )
     screen.getByTestId('create-btn').click()
-    await waitFor(() => expect(screen.getByTestId('error-msg')).toHaveTextContent('Title is required.'))
+    await waitFor(() => expect(screen.getByTestId('field-error-title')).toHaveTextContent('Title is required.'))
   })
 
   it('throws generic message when error envelope has no message', async () => {

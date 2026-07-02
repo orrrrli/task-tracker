@@ -20,7 +20,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             .ToList();
 
         if (errors.Count > 0)
-            return (TResponse)(object)errors;
+            return (TResponse)(dynamic)errors;
 
         return await next();
     }

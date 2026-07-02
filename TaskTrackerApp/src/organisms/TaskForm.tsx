@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,11 +26,12 @@ interface TaskFormProps {
   onSubmit: (data: TaskFormData) => void
   onCancel?: () => void
   initialData?: TaskFormData
+  fieldErrors?: Record<string, string>
 }
 
 const UNASSIGNED_VALUE = 'unassigned'
 
-export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
+export function TaskForm({ onSubmit, onCancel, initialData, fieldErrors }: TaskFormProps) {
   const isEdit = !!initialData
   const [title, setTitle] = useState(initialData?.title ?? '')
   const [description, setDescription] = useState(initialData?.description ?? '')
@@ -38,7 +39,12 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
   const [assignedToId, setAssignedToId] = useState<string>(initialData?.assignedToId != null ? String(initialData.assignedToId) : UNASSIGNED_VALUE)
   const [status, setStatus] = useState<TaskItemStatusType>(initialData?.status ?? TaskItemStatus.Todo)
   const [error, setError] = useState<string | null>(null)
+  const [localFieldErrors, setLocalFieldErrors] = useState<Record<string, string> | undefined>(fieldErrors)
   const { data: users, isLoading: isLoadingUsers, isError: isUsersError, error: usersError } = useUsers()
+
+  useEffect(() => {
+    setLocalFieldErrors(fieldErrors)
+  }, [fieldErrors])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -79,10 +85,14 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
               onChange={(e) => {
                 setTitle(e.target.value)
                 if (error) setError(null)
+                if (localFieldErrors?.title) setLocalFieldErrors(prev => { const next = { ...prev }; delete next.title; return next })
               }}
               placeholder="Task title"
               required
             />
+            {localFieldErrors?.title && (
+              <p className="text-destructive text-xs">{localFieldErrors.title}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -90,10 +100,16 @@ export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
             <Textarea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => {
+                setDescription(e.target.value)
+                if (localFieldErrors?.description) setLocalFieldErrors(prev => { const next = { ...prev }; delete next.description; return next })
+              }}
               placeholder="Optional description"
               rows={3}
             />
+            {localFieldErrors?.description && (
+              <p className="text-destructive text-xs">{localFieldErrors.description}</p>
+            )}
           </div>
 
           <div className="space-y-2">

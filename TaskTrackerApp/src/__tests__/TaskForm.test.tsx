@@ -15,6 +15,41 @@ afterEach(() => {
   cleanup()
 })
 
+describe('TaskForm server-side field errors', () => {
+  it('displays title field error when fieldErrors.title is provided', () => {
+    render(<TaskForm onSubmit={vi.fn()} fieldErrors={{ title: 'Title must not exceed 200 characters.' }} />)
+    expect(screen.getByText('Title must not exceed 200 characters.')).toBeInTheDocument()
+  })
+
+  it('displays description field error when fieldErrors.description is provided', () => {
+    render(<TaskForm onSubmit={vi.fn()} fieldErrors={{ description: 'Description is too long.' }} />)
+    expect(screen.getByText('Description is too long.')).toBeInTheDocument()
+  })
+
+  it('renders no field error paragraphs when fieldErrors is undefined', () => {
+    const { container } = render(<TaskForm onSubmit={vi.fn()} />)
+    expect(container.querySelectorAll('p.text-destructive')).toHaveLength(0)
+  })
+
+  it('clears title field error when user types in title', () => {
+    render(<TaskForm onSubmit={vi.fn()} fieldErrors={{ title: 'Title must not exceed 200 characters.' }} />)
+    expect(screen.getByText('Title must not exceed 200 characters.')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText(/Title/), { target: { value: 'New title' } })
+
+    expect(screen.queryByText('Title must not exceed 200 characters.')).not.toBeInTheDocument()
+  })
+
+  it('clears description field error when user types in description', () => {
+    render(<TaskForm onSubmit={vi.fn()} fieldErrors={{ description: 'Description is too long.' }} />)
+    expect(screen.getByText('Description is too long.')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText(/Description/), { target: { value: 'New description' } })
+
+    expect(screen.queryByText('Description is too long.')).not.toBeInTheDocument()
+  })
+})
+
 describe('TaskForm client-side validation', () => {
   it('shows "Title is required" error when submitting with empty title', async () => {
     const onSubmit = vi.fn()
