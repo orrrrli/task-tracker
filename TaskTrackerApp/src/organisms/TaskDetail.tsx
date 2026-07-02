@@ -1,8 +1,21 @@
+import { useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { useTask } from '@/hooks/useTask'
+import { useDeleteTask } from '@/hooks/useDeleteTask'
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   Todo: 'outline',
@@ -29,6 +42,11 @@ function formatDate(iso: string) {
 
 export function TaskDetail({ taskId, onClose }: TaskDetailProps) {
   const { data: task, isLoading, isError } = useTask(taskId)
+  const deleteTaskMutation = useDeleteTask()
+
+  useEffect(() => {
+    if (deleteTaskMutation.isSuccess) onClose()
+  }, [deleteTaskMutation.isSuccess, onClose])
 
   return (
     <div
@@ -81,6 +99,31 @@ export function TaskDetail({ taskId, onClose }: TaskDetailProps) {
                 <dt className="text-muted-foreground">Updated</dt>
                 <dd>{formatDate(task.updatedAt)}</dd>
               </dl>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full">
+                    Delete task
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete task</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete "{task.title}"? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={() => deleteTaskMutation.mutate(task.id)}
+                      disabled={deleteTaskMutation.isPending}
+                    >
+                      {deleteTaskMutation.isPending ? 'Deleting...' : 'Delete'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           ) : null}
         </CardContent>

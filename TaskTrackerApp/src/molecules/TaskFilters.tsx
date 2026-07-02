@@ -30,9 +30,9 @@ export function TaskFilters({
   onSortDescChange,
 }: TaskFiltersProps) {
   return (
-    <div className="flex gap-4 mb-6 flex-wrap">
+    <div className="flex gap-2 sm:gap-4 mb-6 flex-wrap">
       <Select value={status} onValueChange={onStatusChange}>
-        <SelectTrigger className="w-40">
+        <SelectTrigger className="w-full sm:w-40">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -44,7 +44,7 @@ export function TaskFilters({
       </Select>
 
       <Select value={priority} onValueChange={onPriorityChange}>
-        <SelectTrigger className="w-40">
+        <SelectTrigger className="w-full sm:w-40">
           <SelectValue placeholder="Priority" />
         </SelectTrigger>
         <SelectContent>
@@ -56,7 +56,7 @@ export function TaskFilters({
       </Select>
 
       <Select value={sortBy || 'none'} onValueChange={(v) => onSortByChange(v === 'none' ? '' : v)}>
-        <SelectTrigger className="w-40">
+        <SelectTrigger className="w-full sm:w-40">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>

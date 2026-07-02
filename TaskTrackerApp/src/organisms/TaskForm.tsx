@@ -12,27 +12,31 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useUsers } from '@/hooks/useUsers'
-import { TaskItemPriority, type TaskItemPriority as TaskItemPriorityType } from '@/api/api'
+import { TaskItemPriority, TaskItemStatus, type TaskItemPriority as TaskItemPriorityType, type TaskItemStatus as TaskItemStatusType } from '@/api/api'
 
 export interface TaskFormData {
   title: string
   description: string | null
   priority: TaskItemPriorityType
   assignedToId: number | null
+  status?: TaskItemStatusType
 }
 
 interface TaskFormProps {
   onSubmit: (data: TaskFormData) => void
   onCancel?: () => void
+  initialData?: TaskFormData
 }
 
 const UNASSIGNED_VALUE = 'unassigned'
 
-export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<TaskItemPriorityType>(TaskItemPriority.Medium)
-  const [assignedToId, setAssignedToId] = useState<string>(UNASSIGNED_VALUE)
+export function TaskForm({ onSubmit, onCancel, initialData }: TaskFormProps) {
+  const isEdit = !!initialData
+  const [title, setTitle] = useState(initialData?.title ?? '')
+  const [description, setDescription] = useState(initialData?.description ?? '')
+  const [priority, setPriority] = useState<TaskItemPriorityType>(initialData?.priority ?? TaskItemPriority.Medium)
+  const [assignedToId, setAssignedToId] = useState<string>(initialData?.assignedToId != null ? String(initialData.assignedToId) : UNASSIGNED_VALUE)
+  const [status, setStatus] = useState<TaskItemStatusType>(initialData?.status ?? TaskItemStatus.Todo)
   const [error, setError] = useState<string | null>(null)
   const { data: users, isLoading: isLoadingUsers, isError: isUsersError, error: usersError } = useUsers()
 
@@ -51,13 +55,14 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
       description: description.trim() || null,
       priority,
       assignedToId: assignedToId === UNASSIGNED_VALUE ? null : Number(assignedToId),
+      status,
     })
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create Task</CardTitle>
+        <CardTitle>{isEdit ? 'Edit Task' : 'Create Task'}</CardTitle>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -107,6 +112,24 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
             </Select>
           </div>
 
+          {isEdit && (
+            <div className="space-y-2">
+              <Label htmlFor="status">Status</Label>
+              <Select value={status} onValueChange={(v) => setStatus(v as TaskItemStatusType)}>
+                <SelectTrigger id="status" className="w-full">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.values(TaskItemStatus).map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="space-y-2">
             <Label htmlFor="assignee">Assignee</Label>
             <Select
@@ -140,7 +163,7 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
               Cancel
             </Button>
           )}
-          <Button type="submit">Create Task</Button>
+          <Button type="submit">{isEdit ? 'Save Changes' : 'Create Task'}</Button>
         </CardFooter>
       </form>
     </Card>
