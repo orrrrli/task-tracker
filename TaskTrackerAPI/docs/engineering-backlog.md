@@ -28,7 +28,7 @@
 
 Domain models and enums for tasks and users.
 
-### BE-DOMAIN-1 — As a developer, I want a TaskItem domain model with Title, Description, Status, Priority, Creator, and AssignedTo fields, so that the business entity is properly represented in code.
+### BE-DOMAIN-1 — TaskItem domain model
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -37,7 +37,7 @@ Domain models and enums for tasks and users.
 **Tasks (1):**
 - `BE-DOMAIN-1-T1` Create TaskItem entity
 
-### BE-DOMAIN-2 — As a developer, I want TaskItemStatus and TaskItemPriority enums, so that status and priority values are type-safe and constrained.
+### BE-DOMAIN-2 — Status and Priority enums
 `area:backend` · estimate XS (1 pts)
 
 **Acceptance criteria:**
@@ -47,7 +47,7 @@ Domain models and enums for tasks and users.
 - `BE-DOMAIN-2-T1` Create TaskItemStatus enum
 - `BE-DOMAIN-2-T2` Create TaskItemPriority enum
 
-### BE-DOMAIN-3 — As a developer, I want a User domain model with unique email, so that task ownership and assignment are trackable.
+### BE-DOMAIN-3 — User domain model
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -63,7 +63,7 @@ Domain models and enums for tasks and users.
 
 CQRS commands, queries, handlers, validators, and mappings.
 
-### BE-APP-1 — As a developer, I want a CreateTaskCommand and handler, so that task creation logic is encapsulated and testable in isolation.
+### BE-APP-1 — CreateTaskCommand + handler
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -73,7 +73,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-1-T1` Create CreateTaskCommand
 - `BE-APP-1-T2` Implement CreateTaskCommandHandler
 
-### BE-APP-2 — As a developer, I want an UpdateTaskCommand and handler with partial-update semantics, so that only the provided fields are modified on the task.
+### BE-APP-2 — UpdateTaskCommand + handler (partial)
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -83,7 +83,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-2-T1` Create UpdateTaskCommand
 - `BE-APP-2-T2` Implement UpdateTaskCommandHandler
 
-### BE-APP-3 — As a developer, I want a DeleteTaskCommand and handler, so that tasks can be removed by id.
+### BE-APP-3 — DeleteTaskCommand + handler
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -93,7 +93,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-3-T1` Create DeleteTaskCommand
 - `BE-APP-3-T2` Implement DeleteTaskCommandHandler
 
-### BE-APP-4 — As a developer, I want a GetTaskByIdQuery and handler, so that a single task can be retrieved with full creator and assignee details.
+### BE-APP-4 — GetTaskByIdQuery + handler
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -103,7 +103,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-4-T1` Create GetTaskByIdQuery
 - `BE-APP-4-T2` Implement GetTaskByIdQueryHandler
 
-### BE-APP-5 — As a developer, I want a ListTasksQuery and handler that supports filtering by Status, Priority, and AssignedToId, sorting by Title, Priority, or CreatedAt, and 1-based pagination with configurable page size (default 7), so that consumers can browse and filter the task list efficiently.
+### BE-APP-5 — ListTasksQuery + handler (filter/sort/page)
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -113,7 +113,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-5-T1` Create ListTasksQuery
 - `BE-APP-5-T2` Implement ListTasksQueryHandler with filtering, sorting, pagination
 
-### BE-APP-6 — As a developer, I want ITaskRepository and IUserRepository interfaces, so that the application layer is decoupled from the persistence implementation.
+### BE-APP-6 — ITaskRepository + IUserRepository interfaces
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -123,7 +123,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-6-T1` Create ITaskRepository interface
 - `BE-APP-6-T2` Create IUserRepository interface
 
-### BE-APP-7 — As a developer, I want FluentValidation validators for CreateTaskCommand and UpdateTaskCommand, so that constraint violations surface with clear error messages before handler execution.
+### BE-APP-7 — FluentValidation (Create/Update commands)
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -133,7 +133,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 - `BE-APP-7-T1` Create CreateTaskCommandValidator
 - `BE-APP-7-T2` Create UpdateTaskCommandValidator
 
-### BE-APP-8 — As a developer, I want AutoMapper mappings from TaskItem to TaskResult, so that domain models are safely projected to application DTOs without leaking persistence internals.
+### BE-APP-8 — TaskItem to TaskResult AutoMapper
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -149,7 +149,7 @@ CQRS commands, queries, handlers, validators, and mappings.
 
 PostgreSQL persistence with EF Core.
 
-### BE-INFRA-1 — As a developer, I want a PostgreSQL-backed AppDbContext with EF Core, so that tasks and users are persisted in a relational store.
+### BE-INFRA-1 — AppDbContext (PostgreSQL + EF Core)
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -159,7 +159,7 @@ PostgreSQL persistence with EF Core.
 - `BE-INFRA-1-T1` Create AppDbContext with EF Core
 - `BE-INFRA-1-T2` Configure PostgreSQL connection
 
-### BE-INFRA-2 — As a developer, I want a TaskRepository implementing ITaskRepository with GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, and DeleteAsync, so that all CRUD operations are available to the application layer.
+### BE-INFRA-2 — TaskRepository CRUD impl
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -168,7 +168,7 @@ PostgreSQL persistence with EF Core.
 **Tasks (1):**
 - `BE-INFRA-2-T1` Implement TaskRepository with all CRUD methods
 
-### BE-INFRA-3 — As a developer, I want an EF Core migration (Init) that creates the Tasks and Users tables, so that the schema is version-controlled and reproducible.
+### BE-INFRA-3 — Init EF Core migration
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -177,7 +177,7 @@ PostgreSQL persistence with EF Core.
 **Tasks (1):**
 - `BE-INFRA-3-T1` Create Init migration
 
-### BE-INFRA-4 — As a developer, I want Status and Priority stored as strings in the database, so that enum values are human-readable in the DB and resilient to reordering.
+### BE-INFRA-4 — Enums stored as strings
 `area:backend` · estimate XS (1 pts)
 
 **Acceptance criteria:**
@@ -193,7 +193,7 @@ PostgreSQL persistence with EF Core.
 
 Request and response DTOs for HTTP API.
 
-### BE-CONTRACTS-1 — As a developer, I want CreateTaskRequest, UpdateTaskRequest, and TaskListRequest DTOs, so that HTTP input shapes are explicitly defined and decoupled from domain commands.
+### BE-CONTRACTS-1 — Request DTOs (Create/Update/List)
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -204,7 +204,7 @@ Request and response DTOs for HTTP API.
 - `BE-CONTRACTS-1-T2` Create UpdateTaskRequest
 - `BE-CONTRACTS-1-T3` Create TaskListRequest
 
-### BE-CONTRACTS-2 — As a developer, I want TaskResponse and TaskListResponse DTOs, so that HTTP output shapes are stable and versioned independently of the domain model.
+### BE-CONTRACTS-2 — Response DTOs (Task/TaskList)
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -214,7 +214,7 @@ Request and response DTOs for HTTP API.
 - `BE-CONTRACTS-2-T1` Create TaskResponse
 - `BE-CONTRACTS-2-T2` Create TaskListResponse
 
-### BE-CONTRACTS-3 — As a developer, I want all API responses wrapped in { "ok": true, "data": ... } on success and { "ok": false, "error": { "code": "...", "message": "..." } } on failure, so that clients have a uniform response contract regardless of the operation.
+### BE-CONTRACTS-3 — ApiResult envelope helper
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -230,7 +230,7 @@ Request and response DTOs for HTTP API.
 
 Carter modules exposing task CRUD endpoints.
 
-### BE-CARTER-1 — As an API consumer, I want GET /tasks with optional ?status=, ?priority=, ?assignedToId=, ?sortBy=, ?sortDesc=, ?page=, and ?size= query params, so that I can retrieve a filtered, sorted, paginated list of tasks directly from a browser address bar.
+### BE-CARTER-1 — GET /tasks (filter/sort/page)
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -239,7 +239,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-1-T1` Implement GET /tasks route in TasksModule
 
-### BE-CARTER-2 — As an API consumer, I want GET /tasks/{id}, so that I can retrieve the full detail of a single task including creator name and assignee name.
+### BE-CARTER-2 — GET /tasks/{id}
 `area:backend` · estimate XS (1 pts)
 
 **Acceptance criteria:**
@@ -248,7 +248,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-2-T1` Implement GET /tasks/{id} route in TasksModule
 
-### BE-CARTER-3 — As an API consumer, I want GET /tasks/create?title=&description=&priority=&assignedToId=&creatorId=, so that I can create a new task by navigating to a URL or pasting it in a browser for easy demoing.
+### BE-CARTER-3 — GET /tasks/create
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -257,7 +257,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-3-T1` Implement GET /tasks/create route in TasksModule
 
-### BE-CARTER-4 — As an API consumer, I want GET /tasks/{id}/update?title=&description=&status=&priority=&assignedToId=, so that I can partially update a task with only the fields I pass.
+### BE-CARTER-4 — GET /tasks/{id}/update
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -266,7 +266,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-4-T1` Implement GET /tasks/{id}/update route in TasksModule
 
-### BE-CARTER-5 — As an API consumer, I want GET /tasks/{id}/delete, so that I can delete a task by navigating to a single URL.
+### BE-CARTER-5 — GET /tasks/{id}/delete
 `area:backend` · estimate XS (1 pts)
 
 **Acceptance criteria:**
@@ -275,7 +275,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-5-T1` Implement GET /tasks/{id}/delete route in TasksModule
 
-### BE-CARTER-6 — As an API consumer, I want all request and response bodies (including Authorization headers and credentials) logged at info level, so that every interaction is fully reproducible from logs.
+### BE-CARTER-6 — Request/response body logging
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -284,7 +284,7 @@ Carter modules exposing task CRUD endpoints.
 **Tasks (1):**
 - `BE-CARTER-6-T1` Implement logging middleware for request/response bodies
 
-### BE-CARTER-7 — As a developer, I want Carter ICarterModule implementations registered via app.MapCarter(), so that routes are organized by resource without manual route registration boilerplate.
+### BE-CARTER-7 — Register Carter modules
 `area:backend` · estimate XS (1 pts)
 
 **Acceptance criteria:**
@@ -300,7 +300,7 @@ Carter modules exposing task CRUD endpoints.
 
 Containerize the API + PostgreSQL stack for one-command startup.
 
-### OPS-DOCKER-1 — As a developer, I want a docker-compose.yml that starts the API and PostgreSQL with a single command, so the entire stack runs without local dependency installation.
+### OPS-DOCKER-1 — docker-compose (api + db)
 `area:devops` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -312,7 +312,7 @@ Containerize the API + PostgreSQL stack for one-command startup.
 - `OPS-DOCKER-1-T3` Wire ConnectionStrings__DefaultConnection via environment
 - `OPS-DOCKER-1-T4` Test docker compose up from clean checkout
 
-### OPS-DOCKER-2 — As a developer, I want the API container to run EF Core migrations on startup, so a fresh environment is schema-ready without manual steps.
+### OPS-DOCKER-2 — Auto-run migrations on startup
 `area:devops` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -322,7 +322,7 @@ Containerize the API + PostgreSQL stack for one-command startup.
 - `OPS-DOCKER-2-T1` Add migration runner to Program.cs startup
 - `OPS-DOCKER-2-T2` Verify migrations run on first boot
 
-### OPS-DOCKER-3 — As a developer, I want environment variables for connection strings and secrets managed via Docker Compose, so the app is configurable without changing code.
+### OPS-DOCKER-3 — Env vars via Docker Compose
 `area:devops` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -339,7 +339,7 @@ Containerize the API + PostgreSQL stack for one-command startup.
 
 Build a responsive, mobile-first task management UI.
 
-### FE-FE-1 — As a user, I want a task list view that shows all tasks with their title, status, priority, and assignee, so I have an at-a-glance overview of the project.
+### FE-FE-1 — Task list view
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -351,7 +351,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-1-T3` Wire GET /tasks API call
 - `FE-FE-1-T4` Render task cards with key fields
 
-### FE-FE-2 — As a user, I want to filter the task list by status and priority from the UI, so I can focus on the tasks that are relevant to me.
+### FE-FE-2 — Filter by status/priority
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -362,7 +362,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-2-T2` Wire query params to API call
 - `FE-FE-2-T3` Update list on filter change
 
-### FE-FE-3 — As a user, I want to sort the task list by title, priority, or creation date, so I can organize my view to match my workflow.
+### FE-FE-3 — Sort by title/priority/date
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -373,7 +373,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-3-T2` Wire sortBy and sortDesc query params
 - `FE-FE-3-T3` Update list on sort change
 
-### FE-FE-4 — As a user, I want pagination controls in the task list (previous/next, page indicator), so I can navigate large datasets without overwhelming the view.
+### FE-FE-4 — Pagination controls
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -384,7 +384,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-4-T2` Wire page and size query params
 - `FE-FE-4-T3` Handle empty pages gracefully
 
-### FE-FE-5 — As a user, I want a task detail view showing all fields of a task, so I can see the full context of a work item.
+### FE-FE-5 — Task detail view
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -395,7 +395,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-5-T2` Wire GET /tasks/{id} API call
 - `FE-FE-5-T3` Display all task fields
 
-### FE-FE-6 — As a user, I want a form to create a new task with fields for title, description, priority, and assignee, so I can add work items to the system.
+### FE-FE-6 — Create task form
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -407,7 +407,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-6-T3` Wire GET /tasks/create API call
 - `FE-FE-6-T4` Redirect to list on success
 
-### FE-FE-7 — As a user, I want to edit an existing task's title, description, status, priority, and assignee from the UI, so I can keep task information up to date.
+### FE-FE-7 — Edit task form
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -419,7 +419,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-7-T3` Wire GET /tasks/{id}/update API call
 - `FE-FE-7-T4` Handle validation errors
 
-### FE-FE-8 — As a user, I want a delete confirmation and one-click delete for a task, so I can remove completed or invalid items.
+### FE-FE-8 — Delete with confirmation
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -431,7 +431,7 @@ Build a responsive, mobile-first task management UI.
 - `FE-FE-8-T3` Wire GET /tasks/{id}/delete API call
 - `FE-FE-8-T4` Redirect to list on success
 
-### FE-FE-9 — As a user, I want the UI to be fully responsive and usable on mobile, tablet, and desktop, so I can manage tasks from any device.
+### FE-FE-9 — Responsive UI (mobile/tablet/desktop)
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -449,7 +449,7 @@ Build a responsive, mobile-first task management UI.
 
 Implement JWT-based authentication for secure task management.
 
-### BE-AUTH-1 — As a developer, I want a UserRepository implementing IUserRepository, so user lookup and creation are available to auth handlers.
+### BE-AUTH-1 — UserRepository (EF Core)
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -459,7 +459,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-1-T1` Implement UserRepository with EF Core
 - `BE-AUTH-1-T2` Register in DI
 
-### BE-AUTH-2 — As a developer, I want a RegisterCommand and handler that creates a new User with a hashed password, so new users can be onboarded.
+### BE-AUTH-2 — RegisterCommand + handler
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -470,7 +470,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-2-T2` Implement handler with password hashing
 - `BE-AUTH-2-T3` Add FluentValidation validator
 
-### BE-AUTH-3 — As a developer, I want a LoginQuery and handler that validates credentials and returns a JWT, so authenticated sessions can be established.
+### BE-AUTH-3 — LoginQuery + handler (JWT)
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -481,7 +481,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-3-T2` Implement handler with credential validation
 - `BE-AUTH-3-T3` Generate JWT on success
 
-### BE-AUTH-4 — As a developer, I want an IJwtTokenGenerator implementation that signs tokens with a secret and expiration, so token generation is centralized and configurable.
+### BE-AUTH-4 — JwtTokenGenerator
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -492,7 +492,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-4-T2` Configure secret and expiration from appsettings
 - `BE-AUTH-4-T3` Register in DI
 
-### BE-AUTH-5 — As a developer, I want an IPasswordHasher implementation, so passwords are never stored in plain text.
+### BE-AUTH-5 — PasswordHasher
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -502,7 +502,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-5-T1` Implement PasswordHasher (e.g., BCrypt)
 - `BE-AUTH-5-T2` Register in DI
 
-### BE-AUTH-6 — As an API consumer, I want GET /auth/register?email=&password=&name=, so new accounts can be created from a browser.
+### BE-AUTH-6 — GET /auth/register
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -513,7 +513,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-6-T2` Wire RegisterCommand
 - `BE-AUTH-6-T3` Return success envelope
 
-### BE-AUTH-7 — As an API consumer, I want GET /auth/login?email=&password= returning { ok: true, data: { token: ... } }, so a session token can be obtained from a browser.
+### BE-AUTH-7 — GET /auth/login
 `area:backend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -524,7 +524,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-7-T2` Wire LoginQuery
 - `BE-AUTH-7-T3` Return token in envelope
 
-### BE-AUTH-8 — As an API consumer, I want unauthorized requests to task endpoints to return { ok: false, error: { code: Auth.Unauthorized, message: ... } }, so protected resources are inaccessible without a valid token.
+### BE-AUTH-8 — JWT middleware + 401 envelope
 `area:backend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -535,7 +535,7 @@ Implement JWT-based authentication for secure task management.
 - `BE-AUTH-8-T2` Protect task endpoints with [Authorize]
 - `BE-AUTH-8-T3` Return error envelope on auth failure
 
-### FE-AUTH-1 — As a user, I want a login page with email and password fields, so I can authenticate and access the task management UI.
+### FE-AUTH-1 — Login page
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -547,7 +547,7 @@ Implement JWT-based authentication for secure task management.
 - `FE-AUTH-1-T3` Store JWT in localStorage
 - `FE-AUTH-1-T4` Redirect to task list on success
 
-### FE-AUTH-2 — As a user, I want a registration page with name, email, and password fields, so I can create a new account.
+### FE-AUTH-2 — Registration page
 `area:frontend` · estimate M (3 pts)
 
 **Acceptance criteria:**
@@ -558,7 +558,7 @@ Implement JWT-based authentication for secure task management.
 - `FE-AUTH-2-T2` Wire GET /auth/register API call
 - `FE-AUTH-2-T3` Redirect to login on success
 
-### FE-AUTH-3 — As a user, I want to be redirected to the task list after a successful login, so I land in a productive state immediately.
+### FE-AUTH-3 — Redirect to task list on login
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -568,7 +568,7 @@ Implement JWT-based authentication for secure task management.
 - `FE-AUTH-3-T1` Add redirect logic after login success
 - `FE-AUTH-3-T2` Test redirect flow
 
-### FE-AUTH-4 — As a user, I want my session to persist across browser refreshes (JWT stored client-side), so I do not need to re-authenticate on every visit.
+### FE-AUTH-4 — Session persistence (JWT in localStorage)
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
@@ -579,7 +579,7 @@ Implement JWT-based authentication for secure task management.
 - `FE-AUTH-4-T2` Load JWT on app init
 - `FE-AUTH-4-T3` Attach JWT to all API requests
 
-### FE-AUTH-5 — As a user, I want a logout button that clears my session, so I can safely end my session on a shared device.
+### FE-AUTH-5 — Logout button
 `area:frontend` · estimate S (2 pts)
 
 **Acceptance criteria:**
