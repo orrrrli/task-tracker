@@ -1,3 +1,4 @@
+using Application.Common.Errors;
 using Application.Common.Interfaces.Persistence;
 using Application.UseCases.Task.Commands;
 
@@ -11,7 +12,13 @@ public class DeleteTaskCommandHandler(ITaskRepository taskRepository)
         var task = await taskRepository.GetByIdAsync(command.Id);
 
         if (task is null)
-            return Error.NotFound("Task.NotFound", $"Task with id {command.Id} was not found.");
+            return TaskErrors.NotFound(command.Id);
+
+        if (task.Status == Domain.Enums.TaskItemStatus.Done)
+            return TaskErrors.AlreadyCompleted(command.Id);
+
+        if (task.Status == Domain.Enums.TaskItemStatus.Cancelled)
+            return TaskErrors.AlreadyCancelled(command.Id);
 
         await taskRepository.DeleteAsync(task);
         return Result.Deleted;

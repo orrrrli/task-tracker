@@ -1,3 +1,4 @@
+using Application.Common.Errors;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Models;
 using Application.UseCases.Task.Commands;
@@ -12,7 +13,13 @@ public class UpdateTaskCommandHandler(ITaskRepository taskRepository, IMapper ma
         var task = await taskRepository.GetByIdAsync(command.Id);
 
         if (task is null)
-            return Error.NotFound("Task.NotFound", $"Task with id {command.Id} was not found.");
+            return TaskErrors.NotFound(command.Id);
+
+        if (task.Status == Domain.Enums.TaskItemStatus.Done)
+            return TaskErrors.AlreadyCompleted(command.Id);
+
+        if (task.Status == Domain.Enums.TaskItemStatus.Cancelled)
+            return TaskErrors.AlreadyCancelled(command.Id);
 
         if (command.Title is not null) task.Title = command.Title;
         if (command.Description is not null) task.Description = command.Description;

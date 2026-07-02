@@ -1,3 +1,4 @@
+using Application.Common.Errors;
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Models;
 using Application.UseCases.Task.Queries;
@@ -12,7 +13,7 @@ public class GetTaskByIdQueryHandler(ITaskRepository taskRepository, IMapper map
         var task = await taskRepository.GetByIdAsync(query.Id);
 
         if (task is null)
-            return Error.NotFound("Task.NotFound", $"Task with id {query.Id} was not found.");
+            return TaskErrors.NotFound(query.Id);
 
         return mapper.Map<TaskResult>(task);
     }
