@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <RootNamespace>API</RootNamespace>
-    </PropertyGroup>
+      <UserSecretsId>da502b57-3152-4f9f-b734-e401ea0d5495</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Carter" Version="9.0.0" />
