@@ -15,6 +15,7 @@ export default defineConfig({
     proxy: {
       '/tasks': 'http://localhost:5255',
       '/users': 'http://localhost:5255',
+      '/auth': 'http://localhost:5255',
     },
   },
   test: {
