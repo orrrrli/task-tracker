@@ -58,7 +58,7 @@ public class TasksModule : MainModule, ICarterModule
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, SortBy: {sortBy}, SortDesc: {sortDesc}";
-        LoggingHelper.LogRequest(fullRoute, parametros);
+        LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
@@ -66,7 +66,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(query);
 
             return result.Match(
-                value => ApiResults.Success(value, fullRoute),
+                value => ApiResults.Success(value),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)
@@ -82,14 +82,14 @@ public class TasksModule : MainModule, ICarterModule
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Id: {id}";
-        LoggingHelper.LogRequest(fullRoute, parametros);
+        LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
             var result = await sender.Send(new GetTaskByIdQuery(id));
 
             return result.Match(
-                value => ApiResults.Success(value, fullRoute),
+                value => ApiResults.Success(value),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)
@@ -105,7 +105,7 @@ public class TasksModule : MainModule, ICarterModule
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Title: {request.Title}, Priority: {request.Priority}, CreatorId: {request.CreatorId}";
-        LoggingHelper.LogRequest(fullRoute, parametros);
+        LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
@@ -130,7 +130,7 @@ public class TasksModule : MainModule, ICarterModule
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Id: {id}";
-        LoggingHelper.LogRequest(fullRoute, parametros);
+        LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
@@ -138,7 +138,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(command);
 
             return result.Match(
-                value => ApiResults.Success(value, fullRoute),
+                value => ApiResults.Success(value),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)
@@ -154,7 +154,7 @@ public class TasksModule : MainModule, ICarterModule
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Id: {id}";
-        LoggingHelper.LogRequest(fullRoute, parametros);
+        LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
@@ -162,7 +162,7 @@ public class TasksModule : MainModule, ICarterModule
             var result = await sender.Send(command);
 
             return result.Match(
-                _ => ApiResults.NoContent(fullRoute),
+                _ => ApiResults.NoContent(),
                 errors => ApiResults.Problem(errors, fullRoute));
         }
         catch (Exception ex)

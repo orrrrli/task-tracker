@@ -25,24 +25,14 @@ public record ApiErrorDetail
 
 public static class ApiResults
 {
-    public static IResult Success<T>(T data, string route, object? logData = null)
-    {
-        LoggingHelper.LogInfo(route, logData);
-        return TypedResults.Ok(new ApiSuccessResponse<T> { Data = data });
-    }
+    public static IResult Success<T>(T data) =>
+        TypedResults.Ok(new ApiSuccessResponse<T> { Data = data });
 
-    public static IResult NoContent(string route)
-    {
-        LoggingHelper.LogInfo(route, null);
-        return TypedResults.NoContent();
-    }
+    public static IResult NoContent() =>
+        TypedResults.NoContent();
 
-    public static IResult Created(string route, int id, string message = "Registro creado exitosamente")
-    {
-        var data = new CreatedResponse(id, message);
-        LoggingHelper.LogInfo(route, data);
-        return TypedResults.Created(route, new ApiSuccessResponse<CreatedResponse> { Data = data });
-    }
+    public static IResult Created(string route, int id, string message = "Registro creado exitosamente") =>
+        TypedResults.Created(route, new ApiSuccessResponse<CreatedResponse> { Data = new CreatedResponse(id, message) });
 
     public static IResult Problem(List<Error> errors, string route)
     {

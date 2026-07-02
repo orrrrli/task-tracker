@@ -9,15 +9,14 @@ public static class LoggingHelper
     public static void Initialize(ILoggerFactory factory) =>
         _logger = factory.CreateLogger("API");
 
-    public static void LogRequest(string route, string parameters) =>
-        _logger?.LogInformation("Incoming request at {Route} | Params: {Parameters}", route, parameters);
-
-    public static void LogInfo(string route, object? data)
+    public static void LogRequest(HttpContext ctx, string parameters)
     {
-        if (data is null)
-            _logger?.LogInformation("Response sent at {Route}", route);
-        else
-            _logger?.LogInformation("Response sent at {Route}: {@Data}", route, data);
+        string method = ctx.Request.Method;
+        string route = ctx.Request.Path;
+        string ip = ctx.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+            ?? ctx.Connection.RemoteIpAddress?.ToString()
+            ?? "unknown";
+        _logger?.LogInformation("{Method} {Route} | IP: {IP} | Params: {Parameters}", method, route, ip, parameters);
     }
 
     public static void LogWarning(string route, List<Error> errors) =>
