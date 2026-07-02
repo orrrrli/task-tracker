@@ -48,6 +48,17 @@ export interface ApiSuccessResponseOfListOfTaskResult {
   data: TaskResult[] | null;
 }
 
+export interface UserResult {
+  id: number;
+  name: string;
+}
+
+export interface ApiSuccessResponseOfListOfUserResult {
+  success?: boolean;
+  /** @nullable */
+  data: UserResult[] | null;
+}
+
 /**
  * @nullable
  */
@@ -93,30 +104,10 @@ export const NullableOfTaskItemPriority = {
   Critical: 'Critical',
 } as const;
 
-export type NullableOfTaskItemPriority2 = typeof NullableOfTaskItemPriority2[keyof typeof NullableOfTaskItemPriority2];
-
-
-export const NullableOfTaskItemPriority2 = {
-  Low: 'Low',
-  Medium: 'Medium',
-  High: 'High',
-  Critical: 'Critical',
-} as const;
-
 export type NullableOfTaskItemStatus = typeof NullableOfTaskItemStatus[keyof typeof NullableOfTaskItemStatus] | null;
 
 
 export const NullableOfTaskItemStatus = {
-  Todo: 'Todo',
-  InProgress: 'InProgress',
-  Done: 'Done',
-  Cancelled: 'Cancelled',
-} as const;
-
-export type NullableOfTaskItemStatus2 = typeof NullableOfTaskItemStatus2[keyof typeof NullableOfTaskItemStatus2];
-
-
-export const NullableOfTaskItemStatus2 = {
   Todo: 'Todo',
   InProgress: 'InProgress',
   Done: 'Done',
@@ -135,12 +126,32 @@ export interface UpdateTaskRequest {
 }
 
 export type GetAllTasksParams = {
-status?: NullableOfTaskItemStatus2;
-priority?: NullableOfTaskItemPriority2;
+status?: GetAllTasksStatus;
+priority?: GetAllTasksPriority;
 assignedToId?: number;
 sortBy?: string;
 sortDesc?: boolean;
 };
+
+export type GetAllTasksStatus = typeof GetAllTasksStatus[keyof typeof GetAllTasksStatus];
+
+
+export const GetAllTasksStatus = {
+  Todo: 'Todo',
+  InProgress: 'InProgress',
+  Done: 'Done',
+  Cancelled: 'Cancelled',
+} as const;
+
+export type GetAllTasksPriority = typeof GetAllTasksPriority[keyof typeof GetAllTasksPriority];
+
+
+export const GetAllTasksPriority = {
+  Low: 'Low',
+  Medium: 'Medium',
+  High: 'High',
+  Critical: 'Critical',
+} as const;
 
 export type getAllTasksResponse200 = {
   data: ApiSuccessResponseOfListOfTaskResult
@@ -171,21 +182,14 @@ export const getGetAllTasksUrl = (params?: GetAllTasksParams,) => {
 
 export const getAllTasks = async (params?: GetAllTasksParams, options?: RequestInit): Promise<getAllTasksResponse> => {
 
-  const res = await customFetch(getGetAllTasksUrl(params),
+  return customFetch<getAllTasksResponse>(getGetAllTasksUrl(params),
   {
     ...options,
     method: 'GET'
 
 
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getAllTasksResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getAllTasksResponse
-}
+);}
 
 
 
@@ -211,21 +215,14 @@ export const getCreateTaskUrl = () => {
 
 export const createTask = async (createTaskRequest: CreateTaskRequest, options?: RequestInit): Promise<createTaskResponse> => {
 
-  const res = await customFetch(getCreateTaskUrl(),
+  return customFetch<createTaskResponse>(getCreateTaskUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(createTaskRequest)
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: createTaskResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as createTaskResponse
-}
+);}
 
 
 
@@ -258,21 +255,14 @@ export const getGetTaskByIdUrl = (id: number,) => {
 
 export const getTaskById = async (id: number, options?: RequestInit): Promise<getTaskByIdResponse> => {
 
-  const res = await customFetch(getGetTaskByIdUrl(id),
+  return customFetch<getTaskByIdResponse>(getGetTaskByIdUrl(id),
   {
     ...options,
     method: 'GET'
 
 
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: getTaskByIdResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getTaskByIdResponse
-}
+);}
 
 
 
@@ -306,21 +296,14 @@ export const getUpdateTaskUrl = (id: number,) => {
 export const updateTask = async (id: number,
     updateTaskRequest: UpdateTaskRequest, options?: RequestInit): Promise<updateTaskResponse> => {
 
-  const res = await customFetch(getUpdateTaskUrl(id),
+  return customFetch<updateTaskResponse>(getUpdateTaskUrl(id),
   {
     ...options,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(updateTaskRequest)
   }
-)
-
-
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
-
-  const data: updateTaskResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as updateTaskResponse
-}
+);}
 
 
 
@@ -353,18 +336,44 @@ export const getDeleteTaskUrl = (id: number,) => {
 
 export const deleteTask = async (id: number, options?: RequestInit): Promise<deleteTaskResponse> => {
 
-  const res = await customFetch(getDeleteTaskUrl(id),
+  return customFetch<deleteTaskResponse>(getDeleteTaskUrl(id),
   {
     ...options,
     method: 'DELETE'
 
 
   }
-)
+);}
 
 
-  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: deleteTaskResponse['data'] = body ? JSON.parse(body) : undefined
-  return { data, status: res.status, headers: res.headers } as deleteTaskResponse
+export type getAllUsersResponse200 = {
+  data: ApiSuccessResponseOfListOfUserResult
+  status: 200
 }
+
+export type getAllUsersResponseSuccess = (getAllUsersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type getAllUsersResponse = (getAllUsersResponseSuccess)
+
+export const getGetAllUsersUrl = () => {
+
+
+
+
+  return `/users`
+}
+
+export const getAllUsers = async ( options?: RequestInit): Promise<getAllUsersResponse> => {
+
+  return customFetch<getAllUsersResponse>(getGetAllUsersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
