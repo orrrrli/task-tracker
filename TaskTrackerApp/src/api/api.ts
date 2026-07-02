@@ -129,6 +129,7 @@ export type GetAllTasksParams = {
 status?: GetAllTasksStatus;
 priority?: GetAllTasksPriority;
 assignedToId?: number;
+creatorId?: number;
 sortBy?: string;
 sortDesc?: boolean;
 };

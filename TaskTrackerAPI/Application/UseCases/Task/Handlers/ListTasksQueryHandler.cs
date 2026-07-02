@@ -14,7 +14,8 @@ public class ListTasksQueryHandler(ITaskRepository taskRepository, IMapper mappe
         var filtered = tasks
             .Where(t => query.Status == null || t.Status == query.Status)
             .Where(t => query.Priority == null || t.Priority == query.Priority)
-            .Where(t => query.AssignedToId == null || t.AssignedToId == query.AssignedToId);
+            .Where(t => query.AssignedToId == null || t.AssignedToId == query.AssignedToId)
+            .Where(t => query.CreatorId == null || t.CreatorId == query.CreatorId);
 
         var sorted = query.SortBy?.ToLower() switch
         {

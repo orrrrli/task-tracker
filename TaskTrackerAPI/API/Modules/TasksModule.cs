@@ -55,16 +55,17 @@ public class TasksModule : MainModule, ICarterModule
         [FromQuery] TaskItemStatus? status,
         [FromQuery] TaskItemPriority? priority,
         [FromQuery] int? assignedToId,
+        [FromQuery] int? creatorId,
         [FromQuery] string? sortBy,
         [FromQuery] bool sortDesc = false)
     {
         string fullRoute = httpContext.Request.Path;
-        string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, SortBy: {sortBy}, SortDesc: {sortDesc}";
+        string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, CreatorId: {creatorId}, SortBy: {sortBy}, SortDesc: {sortDesc}";
         LoggingHelper.LogRequest(httpContext, parametros);
 
         try
         {
-            var query = new ListTasksQuery(status, priority, assignedToId, sortBy, sortDesc);
+            var query = new ListTasksQuery(status, priority, assignedToId, sortBy, sortDesc, creatorId);
             var result = await sender.Send(query);
 
             return result.Match(

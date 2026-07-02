@@ -17,6 +17,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { useLogout } from '@/hooks/useAuth'
 import { getUser, getCurrentUserId, type AuthUser } from '@/lib/auth'
+import { WelcomePage } from '@/pages/WelcomePage'
 
 const queryClient = new QueryClient()
 
@@ -28,10 +29,12 @@ function HomePage() {
   const [sortDescParam, setSortDescParam] = useSearchParam('sortDesc', 'false')
 
   const sortDesc = sortDescParam === 'true'
+  const creatorId = getCurrentUserId()
 
   const filters: GetAllTasksParams = {
     status: status === 'all' ? undefined : status as GetAllTasksStatus,
     priority: priority === 'all' ? undefined : priority as GetAllTasksPriority,
+    creatorId,
     sortBy: sortBy || undefined,
     sortDesc: sortBy ? sortDesc : undefined,
   }
@@ -63,7 +66,7 @@ function CreateTaskPage() {
   const handleSubmit = (data: TaskFormData) => {
     createTask.mutate(
       { ...data, creatorId: getCurrentUserId() },
-      { onSuccess: () => navigate('/') }
+      { onSuccess: () => navigate('/tasks') }
     )
   }
 
@@ -75,7 +78,7 @@ function CreateTaskPage() {
     <>
       <TaskForm
         onSubmit={handleSubmit}
-        onCancel={() => navigate('/')}
+        onCancel={() => navigate('/tasks')}
         fieldErrors={createFieldErrors}
       />
       {createTask.isError && !(createTask.error instanceof ValidationError) && (
@@ -87,14 +90,13 @@ function CreateTaskPage() {
   )
 }
 
-function AppContent() {
+function TasksLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const logout = useLogout()
-  const isHome = location.pathname === '/'
+  const isTasks = location.pathname === '/tasks'
   const [authUser, setAuthUser] = useState<AuthUser | null>(getUser())
 
-  // Re-sync auth state whenever the route changes (e.g. after login redirect).
   useEffect(() => {
     setAuthUser(getUser())
   }, [location])
@@ -108,9 +110,9 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer" onClick={() => navigate('/')}>Task Tracker</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer" onClick={() => navigate('/tasks')}>Task Tracker</h1>
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {isHome && (
+          {isTasks && (
             <Button className="w-full sm:w-auto" onClick={() => navigate('/create')}>Create Task</Button>
           )}
           {authUser ? (
@@ -120,20 +122,41 @@ function AppContent() {
             </>
           ) : (
             <>
+              <span className="text-sm text-muted-foreground">Invitado</span>
               <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
-              <Button variant="ghost" onClick={() => navigate('/register')}>Register</Button>
             </>
           )}
         </div>
       </div>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/tasks" element={<HomePage />} />
         <Route path="/create" element={<CreateTaskPage />} />
         <Route path="/edit/:id" element={<EditTaskPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </div>
+  )
+}
+
+function AppContent() {
+  const location = useLocation()
+  const isAuthPage = ['/login', '/register'].includes(location.pathname)
+
+  return (
+    <>
+      {isAuthPage ? (
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      ) : (
+        <>
+          <Routes>
+            <Route path="/" element={<WelcomePage />} />
+          </Routes>
+          <TasksLayout />
+        </>
+      )}
+    </>
   )
 }
 
@@ -172,7 +195,7 @@ function EditTaskPage() {
           status: data.status ?? null,
         },
       },
-      { onSuccess: () => navigate('/') }
+      { onSuccess: () => navigate('/tasks') }
     )
   }
 
@@ -185,7 +208,7 @@ function EditTaskPage() {
       <TaskForm
         initialData={initialData}
         onSubmit={handleSubmit}
-        onCancel={() => navigate('/')}
+        onCancel={() => navigate('/tasks')}
         fieldErrors={updateFieldErrors}
       />
       {updateTaskMutation.isError && !(updateTaskMutation.error instanceof ValidationError) && (
