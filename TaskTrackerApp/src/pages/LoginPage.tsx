@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Mail, Lock, AlertCircle } from 'lucide-react';
 import { useLogin } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,27 +20,82 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 p-6 border rounded-lg">
-        <h1 className="text-2xl font-bold text-center">Iniciar Sesión</h1>
-        <div className="space-y-2">
-          <label htmlFor="email">Email</label>
-          <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Task Tracker</h1>
+          <p className="text-gray-500 mt-2">Bienvenido de nuevo</p>
         </div>
-        <div className="space-y-2">
-          <label htmlFor="password">Contraseña</label>
-          <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Iniciar Sesión</h2>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  className="pl-9 w-full"
+                  placeholder="tu@email.com"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Contraseña
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  id="password"
+                  type="password"
+                  className="pl-9 w-full"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {login.isError && (
+              <div className="flex items-center gap-2 text-red-600 bg-red-50 rounded-lg p-3">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <p className="text-sm">Credenciales inválidas. Intenta de nuevo.</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white mt-2"
+              disabled={login.isPending}
+            >
+              {login.isPending ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+            </Button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col items-center gap-3 text-sm">
+            <p className="text-gray-600">
+              ¿No tienes cuenta?{' '}
+              <Link to="/register" className="font-medium text-gray-900 hover:underline">
+                Regístrate
+              </Link>
+            </p>
+            <Link to="/" className="text-gray-400 hover:text-gray-600 transition-colors">
+              ← Volver al inicio
+            </Link>
+          </div>
         </div>
-        {login.isError && (
-          <p className="text-destructive text-sm">Credenciales inválidas</p>
-        )}
-        <Button type="submit" className="w-full" disabled={login.isPending}>
-          {login.isPending ? 'Cargando...' : 'Entrar'}
-        </Button>
-        <p className="text-center text-sm">
-          ¿No tienes cuenta? <Link to="/register" className="underline">Regístrate</Link>
-        </p>
-      </form>
+      </div>
     </div>
   );
 }

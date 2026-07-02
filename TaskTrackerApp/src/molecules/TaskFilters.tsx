@@ -1,82 +1,84 @@
+import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { TaskItemStatus, TaskItemPriority } from '@/api/api'
+import { Search } from 'lucide-react'
+import { TaskItemPriority, TaskItemStatus } from '@/api/api'
 
-const SORT_OPTIONS = [
-  { value: 'title', label: 'Title' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'createdAt', label: 'Date' },
-]
+const STATUS_LABELS: Record<string, string> = {
+  Todo: 'To Do',
+  InProgress: 'In Progress',
+  Done: 'Done',
+  Cancelled: 'Cancelled',
+}
 
 interface TaskFiltersProps {
-  status: string
+  searchText: string
   priority: string
-  sortBy: string
-  sortDesc: boolean
-  onStatusChange: (value: string) => void
+  status: string
+  showAll: boolean
+  onSearchChange: (value: string) => void
   onPriorityChange: (value: string) => void
-  onSortByChange: (value: string) => void
-  onSortDescChange: (value: boolean) => void
+  onStatusChange: (value: string) => void
+  onShowAllChange: (value: boolean) => void
 }
 
 export function TaskFilters({
-  status,
+  searchText,
   priority,
-  sortBy,
-  sortDesc,
-  onStatusChange,
+  status,
+  showAll,
+  onSearchChange,
   onPriorityChange,
-  onSortByChange,
-  onSortDescChange,
+  onStatusChange,
+  onShowAllChange,
 }: TaskFiltersProps) {
   return (
-    <div className="flex gap-2 sm:gap-4 mb-6 flex-wrap">
-      <Select value={status} onValueChange={onStatusChange}>
-        <SelectTrigger className="w-full sm:w-40">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Status</SelectItem>
-          {(Object.keys(TaskItemStatus) as Array<keyof typeof TaskItemStatus>).map((s) => (
-            <SelectItem key={s} value={TaskItemStatus[s]}>{s}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex gap-3 mb-6 flex-wrap">
+      <div className="relative flex-1 min-w-[200px]">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input
+          className="pl-9 bg-white border-gray-200"
+          placeholder="Search tasks..."
+          value={searchText}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+      </div>
 
       <Select value={priority} onValueChange={onPriorityChange}>
-        <SelectTrigger className="w-full sm:w-40">
-          <SelectValue placeholder="Priority" />
+        <SelectTrigger className="w-44 bg-white border-gray-200">
+          <SelectValue placeholder="All priorities" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Priority</SelectItem>
-          {(Object.keys(TaskItemPriority) as Array<keyof typeof TaskItemPriority>).map((p) => (
+          <SelectItem value="all">All priorities</SelectItem>
+          {(Object.keys(TaskItemPriority) as Array<keyof typeof TaskItemPriority>).map(p => (
             <SelectItem key={p} value={TaskItemPriority[p]}>{p}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      <Select value={sortBy || 'none'} onValueChange={(v) => onSortByChange(v === 'none' ? '' : v)}>
-        <SelectTrigger className="w-full sm:w-40">
-          <SelectValue placeholder="Sort by" />
+      <Select value={status} onValueChange={onStatusChange}>
+        <SelectTrigger className="w-40 bg-white border-gray-200">
+          <SelectValue placeholder="All statuses" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="none">No Sort</SelectItem>
-          {SORT_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+          <SelectItem value="all">All statuses</SelectItem>
+          {(Object.keys(TaskItemStatus) as Array<keyof typeof TaskItemStatus>).map(s => (
+            <SelectItem key={s} value={TaskItemStatus[s]}>{STATUS_LABELS[s] ?? s}</SelectItem>
           ))}
         </SelectContent>
       </Select>
 
-      {sortBy && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onSortDescChange(!sortDesc)}
-          className="h-9 px-3 w-full sm:w-auto"
-        >
-          {sortDesc ? '↓ Desc' : '↑ Asc'}
-        </Button>
-      )}
+      <Select
+        value={showAll ? 'all' : 'mine'}
+        onValueChange={(v) => onShowAllChange(v === 'all')}
+      >
+        <SelectTrigger className="w-36 bg-white border-gray-200">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">Everyone</SelectItem>
+          <SelectItem value="mine">Mine</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   )
 }

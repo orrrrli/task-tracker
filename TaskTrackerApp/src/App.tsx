@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter, Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom'
 import { TaskFilters } from '@/molecules/TaskFilters'
-import { TaskList } from '@/organisms/TaskList'
+import { KanbanBoard } from '@/organisms/TaskList'
 import { TaskDetail } from '@/organisms/TaskDetail'
 import { TaskForm, type TaskFormData } from '@/organisms/TaskForm'
 import { useSearchParam } from '@/hooks/useSearchParam'
 import { useCreateTask } from '@/hooks/useCreateTask'
 import { useUpdateTask } from '@/hooks/useUpdateTask'
+import { useTasks } from '@/hooks/useTasks'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useTask } from '@/hooks/useTask'
-import type { GetAllTasksParams, GetAllTasksStatus, GetAllTasksPriority } from '@/api/api'
+import type { GetAllTasksParams, GetAllTasksPriority, GetAllTasksStatus } from '@/api/api'
 import { ValidationError } from '@/lib/ValidationError'
 import { LoginPage } from '@/pages/LoginPage'
 import { RegisterPage } from '@/pages/RegisterPage'
@@ -21,41 +22,115 @@ import { WelcomePage } from '@/pages/WelcomePage'
 
 const queryClient = new QueryClient()
 
+const STATUS_ORDER = ['Todo', 'InProgress', 'Done', 'Cancelled'] as const
+
+const STATUS_LABEL: Record<string, string> = {
+  Todo: 'To Do',
+  InProgress: 'In Progress',
+  Done: 'Done',
+  Cancelled: 'Cancelled',
+}
+
+const STATUS_DOT: Record<string, string> = {
+  Todo: 'bg-gray-400',
+  InProgress: 'bg-blue-500',
+  Done: 'bg-green-500',
+  Cancelled: 'bg-red-500',
+}
+
 function HomePage() {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null)
-  const [status, setStatus] = useSearchParam('status', 'all')
+  const [searchText, setSearchText] = useSearchParam('search', '')
   const [priority, setPriority] = useSearchParam('priority', 'all')
-  const [sortBy, setSortBy] = useSearchParam('sortBy', '')
-  const [sortDescParam, setSortDescParam] = useSearchParam('sortDesc', 'false')
+  const [status, setStatus] = useSearchParam('status', 'all')
+  const [showAll, setShowAll] = useSearchParam('showAll', 'false')
+  const [authUser, setAuthUser] = useState<AuthUser | null>(getUser())
+  const navigate = useNavigate()
+  const logout = useLogout()
 
-  const sortDesc = sortDescParam === 'true'
-  const creatorId = getCurrentUserId()
-
+  const creatorId = showAll === 'true' ? undefined : getCurrentUserId()
   const filters: GetAllTasksParams = {
-    status: status === 'all' ? undefined : status as GetAllTasksStatus,
     priority: priority === 'all' ? undefined : priority as GetAllTasksPriority,
+    status: status === 'all' ? undefined : status as GetAllTasksStatus,
     creatorId,
-    sortBy: sortBy || undefined,
-    sortDesc: sortBy ? sortDesc : undefined,
+  }
+
+  const { data: allTasks = [], isLoading } = useTasks(filters)
+
+  const tasks = useMemo(() => {
+    if (!searchText.trim()) return allTasks
+    const lower = searchText.toLowerCase()
+    return allTasks.filter(t => t.title.toLowerCase().includes(lower))
+  }, [allTasks, searchText])
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { Todo: 0, InProgress: 0, Done: 0, Cancelled: 0 }
+    tasks.forEach(t => { c[t.status] = (c[t.status] ?? 0) + 1 })
+    return c
+  }, [tasks])
+
+  const handleLogout = () => {
+    logout()
+    setAuthUser(null)
+    navigate('/')
   }
 
   return (
-    <>
-      <TaskFilters
-        status={status}
-        priority={priority}
-        sortBy={sortBy}
-        sortDesc={sortDesc}
-        onStatusChange={setStatus}
-        onPriorityChange={setPriority}
-        onSortByChange={setSortBy}
-        onSortDescChange={(val) => setSortDescParam(String(val))}
-      />
-      <TaskList filters={filters} onSelect={setSelectedTaskId} />
-      {selectedTaskId !== null && (
-        <TaskDetail taskId={selectedTaskId} onClose={() => setSelectedTaskId(null)} />
-      )}
-    </>
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-end gap-3">
+          <span className="text-sm text-gray-600">
+            {authUser ? authUser.name : 'Invitado'}
+          </span>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            Salir
+          </Button>
+        </div>
+      </nav>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex items-start justify-between mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900">Task Tracker</h1>
+            <p className="text-sm text-gray-500 mt-1">{tasks.length} tasks across 4 stages</p>
+          </div>
+          <Button
+            className="bg-gray-900 hover:bg-gray-800 text-white"
+            onClick={() => navigate('/create')}
+          >
+            + New task
+          </Button>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {STATUS_ORDER.map(status => (
+            <div key={status} className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-2.5 h-2.5 rounded-full ${STATUS_DOT[status]}`} />
+                <span className="text-sm text-gray-600">{STATUS_LABEL[status]}</span>
+              </div>
+              <p className="text-3xl font-bold text-gray-900">{counts[status] ?? 0}</p>
+            </div>
+          ))}
+        </div>
+
+        <TaskFilters
+          searchText={searchText}
+          priority={priority}
+          status={status}
+          showAll={showAll === 'true'}
+          onSearchChange={setSearchText}
+          onPriorityChange={setPriority}
+          onStatusChange={setStatus}
+          onShowAllChange={(v) => setShowAll(String(v))}
+        />
+
+        <KanbanBoard tasks={tasks} isLoading={isLoading} onSelect={setSelectedTaskId} />
+
+        {selectedTaskId !== null && (
+          <TaskDetail taskId={selectedTaskId} onClose={() => setSelectedTaskId(null)} />
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -75,88 +150,20 @@ function CreateTaskPage() {
     : undefined
 
   return (
-    <>
-      <TaskForm
-        onSubmit={handleSubmit}
-        onCancel={() => navigate('/tasks')}
-        fieldErrors={createFieldErrors}
-      />
-      {createTask.isError && !(createTask.error instanceof ValidationError) && (
-        <p className="text-destructive text-sm mt-2">
-          Failed to create task: {createTask.error instanceof Error ? createTask.error.message : 'Unknown error'}
-        </p>
-      )}
-    </>
-  )
-}
-
-function TasksLayout() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const logout = useLogout()
-  const isTasks = location.pathname === '/tasks'
-  const [authUser, setAuthUser] = useState<AuthUser | null>(getUser())
-
-  useEffect(() => {
-    setAuthUser(getUser())
-  }, [location])
-
-  const handleLogout = () => {
-    logout()
-    setAuthUser(null)
-    navigate('/')
-  }
-
-  return (
-    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 md:p-8 max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6 md:mb-8">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer" onClick={() => navigate('/tasks')}>Task Tracker</h1>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {isTasks && (
-            <Button className="w-full sm:w-auto" onClick={() => navigate('/create')}>Create Task</Button>
-          )}
-          {authUser ? (
-            <>
-              <span className="text-sm text-muted-foreground">Hola, {authUser.name}</span>
-              <Button variant="outline" onClick={handleLogout}>Logout</Button>
-            </>
-          ) : (
-            <>
-              <span className="text-sm text-muted-foreground">Invitado</span>
-              <Button variant="outline" onClick={() => navigate('/login')}>Login</Button>
-            </>
-          )}
-        </div>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <TaskForm
+          onSubmit={handleSubmit}
+          onCancel={() => navigate('/tasks')}
+          fieldErrors={createFieldErrors}
+        />
+        {createTask.isError && !(createTask.error instanceof ValidationError) && (
+          <p className="text-destructive text-sm mt-2">
+            Failed to create task: {createTask.error instanceof Error ? createTask.error.message : 'Unknown error'}
+          </p>
+        )}
       </div>
-      <Routes>
-        <Route path="/tasks" element={<HomePage />} />
-        <Route path="/create" element={<CreateTaskPage />} />
-        <Route path="/edit/:id" element={<EditTaskPage />} />
-      </Routes>
     </div>
-  )
-}
-
-function AppContent() {
-  const location = useLocation()
-  const isAuthPage = ['/login', '/register'].includes(location.pathname)
-
-  return (
-    <>
-      {isAuthPage ? (
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      ) : (
-        <>
-          <Routes>
-            <Route path="/" element={<WelcomePage />} />
-          </Routes>
-          <TasksLayout />
-        </>
-      )}
-    </>
   )
 }
 
@@ -168,11 +175,23 @@ function EditTaskPage() {
   const updateTaskMutation = useUpdateTask()
 
   if (isLoading) {
-    return <Skeleton className="h-96 w-full" />
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <div className="max-w-2xl mx-auto px-6 py-8">
+          <Skeleton className="h-96 w-full" />
+        </div>
+      </div>
+    )
   }
 
   if (!task) {
-    return <p className="text-destructive">Task not found.</p>
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <div className="max-w-2xl mx-auto px-6 py-8">
+          <p className="text-destructive">Task not found.</p>
+        </div>
+      </div>
+    )
   }
 
   const initialData: TaskFormData = {
@@ -204,19 +223,34 @@ function EditTaskPage() {
     : undefined
 
   return (
-    <>
-      <TaskForm
-        initialData={initialData}
-        onSubmit={handleSubmit}
-        onCancel={() => navigate('/tasks')}
-        fieldErrors={updateFieldErrors}
-      />
-      {updateTaskMutation.isError && !(updateTaskMutation.error instanceof ValidationError) && (
-        <p className="text-destructive text-sm mt-2">
-          Failed to update task: {updateTaskMutation.error instanceof Error ? updateTaskMutation.error.message : 'Unknown error'}
-        </p>
-      )}
-    </>
+    <div className="min-h-screen bg-gray-100">
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <TaskForm
+          initialData={initialData}
+          onSubmit={handleSubmit}
+          onCancel={() => navigate('/tasks')}
+          fieldErrors={updateFieldErrors}
+        />
+        {updateTaskMutation.isError && !(updateTaskMutation.error instanceof ValidationError) && (
+          <p className="text-destructive text-sm mt-2">
+            Failed to update task: {updateTaskMutation.error instanceof Error ? updateTaskMutation.error.message : 'Unknown error'}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function AppContent() {
+  return (
+    <Routes>
+      <Route path="/" element={<WelcomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/tasks" element={<HomePage />} />
+      <Route path="/create" element={<CreateTaskPage />} />
+      <Route path="/edit/:id" element={<EditTaskPage />} />
+    </Routes>
   )
 }
 
