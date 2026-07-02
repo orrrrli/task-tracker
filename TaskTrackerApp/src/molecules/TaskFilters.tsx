@@ -72,7 +72,7 @@ export function TaskFilters({
           variant="outline"
           size="sm"
           onClick={() => onSortDescChange(!sortDesc)}
-          className="h-9 px-3"
+          className="h-9 px-3 w-full sm:w-auto"
         >
           {sortDesc ? '↓ Desc' : '↑ Asc'}
         </Button>

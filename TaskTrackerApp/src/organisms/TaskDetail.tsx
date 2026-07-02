@@ -89,7 +89,7 @@ export function TaskDetail({ taskId, onClose }: TaskDetailProps) {
                 <Badge variant={STATUS_VARIANT[task.status] ?? 'outline'}>{task.status}</Badge>
                 <Badge variant={PRIORITY_VARIANT[task.priority] ?? 'outline'}>{task.priority}</Badge>
               </div>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+              <dl className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
                 <dt className="text-muted-foreground">Creator</dt>
                 <dd>{task.creatorName}</dd>
                 <dt className="text-muted-foreground">Assigned to</dt>
