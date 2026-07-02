@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -41,6 +42,7 @@ function formatDate(iso: string) {
 }
 
 export function TaskDetail({ taskId, onClose }: TaskDetailProps) {
+  const navigate = useNavigate()
   const { data: task, isLoading, isError } = useTask(taskId)
   const deleteTaskMutation = useDeleteTask()
 
@@ -99,6 +101,13 @@ export function TaskDetail({ taskId, onClose }: TaskDetailProps) {
                 <dt className="text-muted-foreground">Updated</dt>
                 <dd>{formatDate(task.updatedAt)}</dd>
               </dl>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate(`/edit/${task.id}`)}
+              >
+                Edit task
+              </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="destructive" className="w-full">
