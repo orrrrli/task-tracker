@@ -7,13 +7,13 @@ namespace API.Common;
 
 public record ApiSuccessResponse<T>
 {
-    public bool Ok { get; init; } = true;
+    public bool Success { get; init; } = true;
     public required T Data { get; init; }
 }
 
 public record ApiErrorResponse
 {
-    public bool Ok { get; init; } = false;
+    public bool Success { get; init; } = false;
     public required ApiErrorDetail Error { get; init; }
 }
 

@@ -7,6 +7,7 @@ using API.Helpers;
 using Application.Common.Models;
 using Application.UseCases.Task.Commands;
 using Application.UseCases.Task.Queries;
+using Contracts.Tasks.Requests;
 using Domain.Enums;
 
 namespace API.Modules;
@@ -18,7 +19,7 @@ public class TasksModule : MainModule, ICarterModule
         RouteGroupBuilder group = app.MapGroup("tasks");
 
         group.MapGet("/", GetAllTasksAsync)
-            .Produces<ApiSuccessResponse<TaskListResult>>(StatusCodes.Status200OK)
+            .Produces<ApiSuccessResponse<List<TaskResult>>>(StatusCodes.Status200OK)
             .WithName("GetAllTasks")
             .WithOpenApi();
 
@@ -28,18 +29,18 @@ public class TasksModule : MainModule, ICarterModule
             .WithName("GetTaskById")
             .WithOpenApi();
 
-        group.MapGet("/create", CreateTaskAsync)
+        group.MapPost("/", CreateTaskAsync)
             .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status201Created)
             .WithName("CreateTask")
             .WithOpenApi();
 
-        group.MapGet("/{id:int}/update", UpdateTaskAsync)
+        group.MapPatch("/{id:int}", UpdateTaskAsync)
             .Produces<ApiSuccessResponse<TaskResult>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("UpdateTask")
             .WithOpenApi();
 
-        group.MapGet("/{id:int}/delete", DeleteTaskAsync)
+        group.MapDelete("/{id:int}", DeleteTaskAsync)
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteTask")
@@ -53,17 +54,15 @@ public class TasksModule : MainModule, ICarterModule
         [FromQuery] TaskItemPriority? priority,
         [FromQuery] int? assignedToId,
         [FromQuery] string? sortBy,
-        [FromQuery] bool sortDesc = false,
-        [FromQuery] int page = 1,
-        [FromQuery] int size = 7)
+        [FromQuery] bool sortDesc = false)
     {
         string fullRoute = httpContext.Request.Path;
-        string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, SortBy: {sortBy}, SortDesc: {sortDesc}, Page: {page}, Size: {size}";
+        string parametros = $"Status: {status}, Priority: {priority}, AssignedToId: {assignedToId}, SortBy: {sortBy}, SortDesc: {sortDesc}";
         LoggingHelper.LogRequest(fullRoute, parametros);
 
         try
         {
-            var query = new ListTasksQuery(status, priority, assignedToId, sortBy, sortDesc, page, size);
+            var query = new ListTasksQuery(status, priority, assignedToId, sortBy, sortDesc);
             var result = await sender.Send(query);
 
             return result.Match(
@@ -102,19 +101,15 @@ public class TasksModule : MainModule, ICarterModule
     private static async Task<IResult> CreateTaskAsync(
         ISender sender,
         HttpContext httpContext,
-        [FromQuery] string title,
-        [FromQuery] TaskItemPriority priority,
-        [FromQuery] int creatorId,
-        [FromQuery] string? description,
-        [FromQuery] int? assignedToId)
+        [FromBody] CreateTaskRequest request)
     {
         string fullRoute = httpContext.Request.Path;
-        string parametros = $"Title: {title}, Priority: {priority}, CreatorId: {creatorId}";
+        string parametros = $"Title: {request.Title}, Priority: {request.Priority}, CreatorId: {request.CreatorId}";
         LoggingHelper.LogRequest(fullRoute, parametros);
 
         try
         {
-            var command = new CreateTaskCommand(title, description, priority, assignedToId, creatorId);
+            var command = new CreateTaskCommand(request.Title, request.Description, request.Priority, request.AssignedToId, request.CreatorId);
             var result = await sender.Send(command);
 
             return result.Match(
@@ -131,11 +126,7 @@ public class TasksModule : MainModule, ICarterModule
         ISender sender,
         HttpContext httpContext,
         [FromRoute] int id,
-        [FromQuery] string? title,
-        [FromQuery] string? description,
-        [FromQuery] TaskItemStatus? status,
-        [FromQuery] TaskItemPriority? priority,
-        [FromQuery] int? assignedToId)
+        [FromBody] UpdateTaskRequest request)
     {
         string fullRoute = httpContext.Request.Path;
         string parametros = $"Id: {id}";
@@ -143,7 +134,7 @@ public class TasksModule : MainModule, ICarterModule
 
         try
         {
-            var command = new UpdateTaskCommand(id, title, description, status, priority, assignedToId);
+            var command = new UpdateTaskCommand(id, request.Title, request.Description, request.Status, request.Priority, request.AssignedToId);
             var result = await sender.Send(command);
 
             return result.Match(

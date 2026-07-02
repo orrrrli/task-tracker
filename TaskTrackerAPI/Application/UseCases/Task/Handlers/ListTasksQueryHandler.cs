@@ -5,9 +5,9 @@ using Application.UseCases.Task.Queries;
 namespace Application.UseCases.Task.Handlers;
 
 public class ListTasksQueryHandler(ITaskRepository taskRepository, IMapper mapper)
-    : IRequestHandler<ListTasksQuery, ErrorOr<TaskListResult>>
+    : IRequestHandler<ListTasksQuery, ErrorOr<List<TaskResult>>>
 {
-    public async Task<ErrorOr<TaskListResult>> Handle(ListTasksQuery query, CancellationToken cancellationToken)
+    public async Task<ErrorOr<List<TaskResult>>> Handle(ListTasksQuery query, CancellationToken cancellationToken)
     {
         var tasks = await taskRepository.GetAllAsync();
 
@@ -24,13 +24,8 @@ public class ListTasksQueryHandler(ITaskRepository taskRepository, IMapper mappe
             _           => filtered.OrderByDescending(t => t.CreatedAt)
         };
 
-        var total = sorted.Count();
-        var items = sorted
-            .Skip((query.Page - 1) * query.Size)
-            .Take(query.Size)
+        return sorted
             .Select(t => mapper.Map<TaskResult>(t))
             .ToList();
-
-        return new TaskListResult(items, query.Page, query.Size, total);
     }
 }

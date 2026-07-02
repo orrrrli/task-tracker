@@ -8,7 +8,5 @@ public record ListTasksQuery(
     TaskItemPriority? Priority,
     int? AssignedToId,
     string? SortBy,
-    bool SortDesc = false,
-    int Page = 1,
-    int Size = 7
-) : IRequest<ErrorOr<TaskListResult>>;
+    bool SortDesc = false
+) : IRequest<ErrorOr<List<TaskResult>>>;
