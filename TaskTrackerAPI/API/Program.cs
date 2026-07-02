@@ -6,6 +6,7 @@ using Carter;
 using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilog();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

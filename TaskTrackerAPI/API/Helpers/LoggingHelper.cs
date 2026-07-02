@@ -12,8 +12,13 @@ public static class LoggingHelper
     public static void LogRequest(string route, string parameters) =>
         _logger?.LogInformation("Incoming request at {Route} | Params: {Parameters}", route, parameters);
 
-    public static void LogInfo(string route, object? data) =>
-        _logger?.LogInformation("Request at {Route}: {@Data}", route, data);
+    public static void LogInfo(string route, object? data)
+    {
+        if (data is null)
+            _logger?.LogInformation("Response sent at {Route}", route);
+        else
+            _logger?.LogInformation("Response sent at {Route}: {@Data}", route, data);
+    }
 
     public static void LogWarning(string route, List<Error> errors) =>
         _logger?.LogWarning("Validation errors at {Route}: {@Errors}", route, errors);
