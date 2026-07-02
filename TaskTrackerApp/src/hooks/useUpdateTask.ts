@@ -8,10 +8,8 @@ export function useUpdateTask() {
     mutationFn: async ({ id, request }: { id: number; request: UpdateTaskRequest }) => {
       const res = await updateTask(id, request)
       if (res.status === 200) return res.data.data
-      if (res.status === 404) throw new Error('Task not found')
-      // API type only defines 200/404; cast to extract error body for other statuses
-      const body = (res as any)?.data
-      throw new Error(body?.error?.message ?? 'Validation failed')
+      const errorBody = (res as any).data
+      throw new Error(errorBody?.error?.message ?? 'Failed to update task')
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })

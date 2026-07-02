@@ -47,24 +47,7 @@ describe('useUpdateTask', () => {
     expect(mutationResult).toEqual(mockTask)
   })
 
-  it('throws on 404 with task not found message', async () => {
-    globalThis.fetch = (async () =>
-      new Response(JSON.stringify({}), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      })) as typeof fetch
-
-    const { result } = renderHook(() => useUpdateTask(), { wrapper })
-
-    await expect(
-      result.current.mutateAsync({
-        id: 999,
-        request: { title: null, description: null, status: null, priority: null, assignedToId: null },
-      }),
-    ).rejects.toThrow('Task not found')
-  })
-
-  it('throws on 400 with validation message', async () => {
+  it('throws API error message when present in error envelope', async () => {
     globalThis.fetch = (async () =>
       new Response(JSON.stringify({ success: false, error: { code: 'Validation', message: 'Title: Title is required.' } }), {
         status: 400,
@@ -79,6 +62,23 @@ describe('useUpdateTask', () => {
         request: { title: null, description: null, status: null, priority: null, assignedToId: null },
       }),
     ).rejects.toThrow('Title: Title is required.')
+  })
+
+  it('throws generic message when error envelope has no message', async () => {
+    globalThis.fetch = (async () =>
+      new Response(JSON.stringify({}), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' },
+      })) as typeof fetch
+
+    const { result } = renderHook(() => useUpdateTask(), { wrapper })
+
+    await expect(
+      result.current.mutateAsync({
+        id: 999,
+        request: { title: null, description: null, status: null, priority: null, assignedToId: null },
+      }),
+    ).rejects.toThrow('Failed to update task')
   })
 
   it('invalidates task queries on success', async () => {

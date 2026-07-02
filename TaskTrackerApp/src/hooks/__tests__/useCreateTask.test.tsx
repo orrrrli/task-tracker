@@ -86,10 +86,10 @@ describe('useCreateTask', () => {
     expect(screen.getByTestId('task-data')).toHaveTextContent('New Task')
   })
 
-  it('shows error state on non-201 response', async () => {
+  it('throws API error message when present in error envelope', async () => {
     mockCreateTask.mockResolvedValueOnce({
       status: 400,
-      data: { success: false, data: null },
+      data: { success: false, error: { code: 'Validation', message: 'Title is required.' } },
     } as unknown as createTaskResponse)
     render(
       <QueryClientProvider client={queryClient}>
@@ -97,7 +97,20 @@ describe('useCreateTask', () => {
       </QueryClientProvider>
     )
     screen.getByTestId('create-btn').click()
-    await waitFor(() => expect(screen.getByTestId('error')).toBeInTheDocument())
-    await waitFor(() => expect(screen.getByTestId('error-msg')).toHaveTextContent('Validation failed'))
+    await waitFor(() => expect(screen.getByTestId('error-msg')).toHaveTextContent('Title is required.'))
+  })
+
+  it('throws generic message when error envelope has no message', async () => {
+    mockCreateTask.mockResolvedValueOnce({
+      status: 500,
+      data: {},
+    } as unknown as createTaskResponse)
+    render(
+      <QueryClientProvider client={queryClient}>
+        <TestComponent request={createTaskRequest} />
+      </QueryClientProvider>
+    )
+    screen.getByTestId('create-btn').click()
+    await waitFor(() => expect(screen.getByTestId('error-msg')).toHaveTextContent('Failed to create task'))
   })
 })
