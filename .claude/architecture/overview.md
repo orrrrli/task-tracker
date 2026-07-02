@@ -14,8 +14,24 @@
 - **Rate Limiting:** ASP.NET Core built-in `FixedWindowRateLimiter` (60 req/min per IP)
 
 ### Frontend (`TaskTrackerApp/`)
-- Responsive web app (implementation in progress)
-- Consumes the REST API
+- **Framework:** React 19 + TypeScript
+- **Build:** Vite
+- **Data Fetching:** TanStack Query v5 (cache, loading/error states, background refetch)
+- **Validation:** Zod (runtime schema validation)
+- **API Client:** openapi-ts (generates types + fetch client from OpenAPI spec)
+- **Styling:** CSS Modules (co-located per component)
+- **Pattern:** Atomic Design — `atoms/`, `molecules/`, `organisms/`
+
+#### Atomic Design Structure
+```
+src/
+├── atoms/          # Button, Input, Badge, Icon — indivisible UI units
+├── molecules/       # TaskCard, FilterBar, SearchInput — composed atoms
+├── organisms/       # TaskList, TaskForm, Header — composed molecules
+├── hooks/          # useTasks, useAuth — TanStack Query wrappers
+├── api/            # Generated OpenAPI client
+└── pages/          # Route-level components
+```
 
 ## Pattern
 Clean Architecture with CQRS on the backend:

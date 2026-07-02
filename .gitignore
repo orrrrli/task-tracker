@@ -12,6 +12,7 @@ build/
 out/
 *.egg-info/
 target/
+manifest.json
 
 # .NET
 bin/
