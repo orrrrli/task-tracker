@@ -90,7 +90,7 @@ describe('useCreateTask', () => {
     mockCreateTask.mockResolvedValueOnce({
       status: 400,
       data: { success: false, data: null },
-    } as createTaskResponse)
+    } as unknown as createTaskResponse)
     render(
       <QueryClientProvider client={queryClient}>
         <TestComponent request={createTaskRequest} />

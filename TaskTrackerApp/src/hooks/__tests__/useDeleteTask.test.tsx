@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, cleanup } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useDeleteTask } from '@/hooks/useDeleteTask'
-import { deleteTask, deleteTaskResponse } from '@/api/api'
+import { deleteTask, type deleteTaskResponse } from '@/api/api'
 
 vi.mock('@/api/api', () => ({
   deleteTask: vi.fn(),
