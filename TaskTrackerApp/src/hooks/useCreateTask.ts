@@ -7,8 +7,12 @@ export function useCreateTask() {
   return useMutation({
     mutationFn: async (request: CreateTaskRequest) => {
       const res = await createTask(request)
-      if (res.status !== 201) throw new Error('Failed to create task')
-      return res.data.data
+      if (res.status === 201) return res.data.data
+      if (res.status === 400) {
+        const errorBody = (res as any).data
+        throw new Error(errorBody?.error?.message ?? 'Validation failed')
+      }
+      throw new Error('Failed to create task')
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
