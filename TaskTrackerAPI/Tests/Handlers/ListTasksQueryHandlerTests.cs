@@ -1,5 +1,6 @@
 using Application.Common.Interfaces.Persistence;
 using Application.Common.Models;
+using Application.UseCases.Task.Common;
 using Application.UseCases.Task.Handlers;
 using Application.UseCases.Task.Queries;
 using Domain.Enums;

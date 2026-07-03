@@ -1,6 +1,6 @@
 using Domain.Enums;
 
-namespace Application.Common.Models;
+namespace Application.UseCases.Task.Common;
 
 public record TaskResult(
     int Id,

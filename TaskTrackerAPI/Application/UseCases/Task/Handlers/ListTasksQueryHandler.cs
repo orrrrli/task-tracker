@@ -1,5 +1,5 @@
 using Application.Common.Interfaces.Persistence;
-using Application.Common.Models;
+using Application.UseCases.Task.Common;
 using Application.UseCases.Task.Queries;
 
 namespace Application.UseCases.Task.Handlers;

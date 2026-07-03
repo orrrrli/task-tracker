@@ -1,6 +1,6 @@
 using Application.Common.Interfaces.Persistence;
-using Application.Common.Models;
 using Application.UseCases.Task.Commands;
+using Application.UseCases.Task.Common;
 using Domain.Models;
 
 namespace Application.UseCases.Task.Handlers;

@@ -1,4 +1,5 @@
 using Application.Common.Models;
+using Application.UseCases.Task.Common;
 using Contracts.Tasks.Responses;
 
 namespace API.Common.Mappings;

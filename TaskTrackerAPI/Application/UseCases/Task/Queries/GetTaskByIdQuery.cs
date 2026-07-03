@@ -1,4 +1,4 @@
-using Application.Common.Models;
+using Application.UseCases.Task.Common;
 
 namespace Application.UseCases.Task.Queries;
 

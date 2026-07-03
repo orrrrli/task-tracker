@@ -1,4 +1,4 @@
-using Application.Common.Models;
+using Application.UseCases.Task.Common;
 using Domain.Enums;
 
 namespace Application.UseCases.Task.Commands;
