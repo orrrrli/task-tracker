@@ -43,7 +43,7 @@ function HomePage() {
   const [searchText, setSearchText] = useSearchParam('search', '')
   const [priority, setPriority] = useSearchParam('priority', 'all')
   const [status, setStatus] = useSearchParam('status', 'all')
-  const [showAll, setShowAll] = useSearchParam('showAll', 'false')
+  const [showAll, setShowAll] = useSearchParam('showAll', 'true')
   const [authUser, setAuthUser] = useState<AuthUser | null>(getUser())
   const navigate = useNavigate()
   const logout = useLogout()
@@ -78,13 +78,16 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-end gap-3">
-          <span className="text-sm text-gray-600">
-            {authUser ? authUser.name : 'Invitado'}
-          </span>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
-            Salir
-          </Button>
+        <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between gap-3">
+          <span className="text-sm font-semibold tracking-wide text-gray-900">Dallio Workspace</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600">
+              {authUser ? authUser.name : 'Invitado'}
+            </span>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              Salir
+            </Button>
+          </div>
         </div>
       </nav>
       <div className="max-w-7xl mx-auto px-6 py-8">

@@ -23,8 +23,9 @@ export function LoginPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Task Tracker</h1>
-          <p className="text-gray-500 mt-2">Bienvenido de nuevo</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">Dallio Workspace</p>
+          <h1 className="text-3xl font-bold text-gray-900">Bienvenido de nuevo</h1>
+          <p className="text-gray-500 mt-2">Inicia sesión para continuar en tu workspace</p>
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
