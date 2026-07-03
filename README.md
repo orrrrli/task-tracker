@@ -176,7 +176,7 @@ npm run dev
 ### Both together
 
 ```bash
-npm run dev:all   # runs concurrently from repo root
+npm run dev:all   # runs concurrently from frontend repo 
 ```
 
 ---
