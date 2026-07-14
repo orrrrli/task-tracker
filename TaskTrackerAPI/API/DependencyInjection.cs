@@ -93,7 +93,7 @@ public static class DependencyInjection
 
                 return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
                 {
-                    Window = TimeSpan.FromMinutes(1),
+                    Window = TimeSpan.FromMinutes(10),
                     PermitLimit = 10,
                     QueueLimit = 0,
                     AutoReplenishment = true,
