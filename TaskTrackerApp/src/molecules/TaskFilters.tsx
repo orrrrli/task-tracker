@@ -2,13 +2,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search } from 'lucide-react'
 import { TaskItemPriority, TaskItemStatus } from '@/api/api'
-
-const STATUS_LABELS: Record<string, string> = {
-  Todo: 'To Do',
-  InProgress: 'In Progress',
-  Done: 'Done',
-  Cancelled: 'Cancelled',
-}
+import { STATUS_LABEL } from '@/lib/taskStatus'
 
 interface TaskFiltersProps {
   searchText: string
@@ -62,7 +56,7 @@ export function TaskFilters({
         <SelectContent>
           <SelectItem value="all">All statuses</SelectItem>
           {(Object.keys(TaskItemStatus) as Array<keyof typeof TaskItemStatus>).map(s => (
-            <SelectItem key={s} value={TaskItemStatus[s]}>{STATUS_LABELS[s] ?? s}</SelectItem>
+            <SelectItem key={s} value={TaskItemStatus[s]}>{STATUS_LABEL[s] ?? s}</SelectItem>
           ))}
         </SelectContent>
       </Select>
