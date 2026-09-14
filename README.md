@@ -17,10 +17,12 @@ A full-stack task management application built with **.NET 9** and **React 19**.
 | **Mapping** | Mapster 10 |
 | **Auth** | JWT Bearer · BCrypt |
 | **Error handling** | ErrorOr 2 (functional Result type) |
-| **Rate limiting** | ASP.NET Core built-in (60 req/min per IP) |
+| **Rate limiting** | ASP.NET Core built-in (10 req / 10 min per IP) |
 | **Frontend** | React 19 · TypeScript · Vite |
 | **Data fetching** | TanStack Query v5 |
-| **Styling** | CSS Modules (Atomic Design) |
+| **Routing** | React Router v7 |
+| **API client** | Orval — typed client generated from the OpenAPI spec |
+| **Styling** | Tailwind CSS v4 · shadcn/ui (Radix primitives) |
 | **Testing** | xUnit · FluentAssertions · NSubstitute · Vitest · React Testing Library |
 | **CI/CD** | GitHub Actions → Docker → VPS |
 
@@ -130,16 +132,18 @@ Tasks (Id, Title, Description, Status, Priority, CreatorId, AssignedToId, Create
 
 ## Frontend
 
-React 19 + TypeScript app following **Atomic Design**:
+React 19 + TypeScript app. Composition follows Atomic Design, with the primitive
+layer delegated to shadcn/ui instead of hand-rolled atoms:
 
 ```
 src/
-├── atoms/       # Button, Input, Label, Badge
-├── molecules/   # TaskCard, TaskFilters
-├── organisms/   # TaskList, TaskForm, TaskDetail
-├── pages/       # WelcomePage, LoginPage, RegisterPage
-├── hooks/       # useAuth, useTasks — TanStack Query wrappers
-└── api/         # Generated OpenAPI client
+├── components/ui/  # shadcn/ui primitives — button, input, select, card, badge, skeleton…
+├── molecules/      # TaskCard, TaskFilters, StatusStatsGrid
+├── organisms/      # Navbar, TaskList, TaskForm, TaskDetail
+├── pages/          # Welcome, Login, Register, Home, CreateTask, EditTask
+├── hooks/          # useAuth, useTasks, useCreateTask, useUpdateTask, useDeleteTask…
+├── lib/            # auth, taskStatus, ValidationError, utils
+└── api/            # Orval-generated client + fetcher
 ```
 
 Authentication is stored in `localStorage`. Unauthenticated users land on the welcome page; login issues a JWT and updates all query keys.
