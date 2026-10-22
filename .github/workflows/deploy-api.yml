@@ -58,6 +58,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            umask 077  # .env holds the DB password: owner-only
             printf "DB_CONNECTION_STRING=%s\n" \
               "${{ secrets.DB_CONNECTION_STRING }}" \
               > /home/rokev-dynamics/TaskTracker/.env
