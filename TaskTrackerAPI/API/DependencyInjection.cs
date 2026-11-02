@@ -40,6 +40,12 @@ public static class DependencyInjection
     {
         IConfigurationSection jwtSettings = configuration.GetSection("JwtSettings");
 
+        // Production gets it from JwtSettings__Secret (CI writes JWT_SECRET into the server .env).
+        // Refuse to start without it rather than sign tokens with an empty or weak key.
+        string? secret = jwtSettings["Secret"];
+        if (string.IsNullOrWhiteSpace(secret) || Encoding.UTF8.GetByteCount(secret) < 32)
+            throw new InvalidOperationException("JwtSettings:Secret must be set to at least 32 bytes.");
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -52,7 +58,7 @@ public static class DependencyInjection
                     ValidIssuer = jwtSettings["Issuer"],
                     ValidAudience = jwtSettings["Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSettings["Secret"]!))
+                        Encoding.UTF8.GetBytes(secret))
                 };
             });
 
