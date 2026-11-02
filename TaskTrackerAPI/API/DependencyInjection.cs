@@ -3,8 +3,10 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using API.Extensions;
 using API.GlobalException;
+using API.Helpers;
 using Carter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 
@@ -21,6 +23,7 @@ public static class DependencyInjection
             .AddGlobalExceptionHandling()
             .AddProblemDetails()
             .AddMapping()
+            .AddForwardedHeadersConfig(configuration)
             .AddRateLimitingConfig();
 
         services.AddHealthChecks();
@@ -79,17 +82,40 @@ public static class DependencyInjection
         return services;
     }
 
+    /// <summary>
+    /// Production path: Cloudflare → host nginx ($proxy_add_x_forwarded_for) → API container.
+    /// Trusts only ForwardedHeaders:KnownNetworks (loopback, private/Docker ranges, Cloudflare's
+    /// published ranges). The middleware walks X-Forwarded-For from the right while hops are
+    /// trusted, so the client IP is the right-most untrusted entry and anything a client
+    /// prepends is ignored.
+    /// </summary>
+    public static IServiceCollection AddForwardedHeadersConfig(this IServiceCollection services, IConfiguration configuration)
+    {
+        string[] networks = configuration.GetSection("ForwardedHeaders:KnownNetworks").Get<string[]>() ?? [];
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            options.ForwardLimit = null;
+            options.KnownProxies.Clear();
+            options.KnownNetworks.Clear();
+            foreach (string cidr in networks)
+                options.KnownNetworks.Add(Microsoft.AspNetCore.HttpOverrides.IPNetwork.Parse(cidr));
+        });
+
+        return services;
+    }
+
     private static IServiceCollection AddRateLimitingConfig(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+            // Runs after UseForwardedHeaders, so the connection IP is already the client.
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
-                string ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                    ?? httpContext.Connection.RemoteIpAddress?.ToString()
-                    ?? "unknown";
+                string ip = ClientIp.RateLimitKey(httpContext.Connection.RemoteIpAddress);
 
                 return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
                 {
