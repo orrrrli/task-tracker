@@ -12,10 +12,7 @@ public static class ApiConfig
             options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} | {StatusCode} | {Elapsed:0}ms | IP: {IP}";
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
             {
-                string ip = httpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                    ?? httpContext.Connection.RemoteIpAddress?.ToString()
-                    ?? "unknown";
-                diagnosticContext.Set("IP", ip);
+                diagnosticContext.Set("IP", httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown");
             };
         });
         return app;

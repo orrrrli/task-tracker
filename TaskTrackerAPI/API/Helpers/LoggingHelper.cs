@@ -13,9 +13,7 @@ public static class LoggingHelper
     {
         string method = ctx.Request.Method;
         string route = ctx.Request.Path;
-        string ip = ctx.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-            ?? ctx.Connection.RemoteIpAddress?.ToString()
-            ?? "unknown";
+        string ip = ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         _logger?.LogInformation("{Method} {Route} | IP: {IP} | Params: {Parameters}", method, route, ip, parameters);
     }
 
