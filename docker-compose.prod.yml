@@ -4,6 +4,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING}
+      JwtSettings__Secret: ${JWT_SECRET}
       CorsSettings__AllowedOrigins__0: "https://tasks.orlando.codes"
     extra_hosts:
       - "host.docker.internal:host-gateway"
